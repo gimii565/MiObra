@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>👤 Mi Perfil</h1>
+    <a href="/mi-semana/{{ t.id }}" class="btn-secondary">← Volver</a>
+</div>
+
+<div style="max-width:500px;margin:0 auto;">
+
+    {% if exito %}
+    <div style="background:#d4edda;border:1px solid #28a745;border-radius:8px;
+                padding:10px;margin-bottom:16px;color:#155724;font-size:14px;">
+        ✅ {{ exito }}
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div style="background:#ffe0e0;border:1px solid #ff6b6b;border-radius:8px;
+                padding:10px;margin-bottom:16px;color:#c00;font-size:14px;">
+        ❌ {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="card">
+
+        <!-- Foto de perfil -->
+        <div style="text-align:center;margin-bottom:24px;">
+            {% if t.foto_perfil %}
+                <img src="/static/fotos/{{ t.foto_perfil }}"
+                     style="width:100px;height:100px;border-radius:50%;object-fit:cover;
+                            border:3px solid var(--primary);">
+            {% else %}
+                <div style="width:100px;height:100px;border-radius:50%;background:var(--primary);
+                            display:flex;align-items:center;justify-content:center;
+                            font-size:40px;margin:0 auto;">
+                    🧱
+                </div>
+            {% endif %}
+            <p style="margin-top:8px;font-weight:bold;color:var(--text);">
+                {{ t.nombre }} {{ t.apellido or '' }}
+            </p>
+            <p style="font-size:13px;color:var(--text-muted);">{{ t.rol }}</p>
+            <p style="font-size:13px;color:var(--text-muted);">{{ t.obra.nombre }}</p>
+        </div>
+
+        <form method="POST" action="/trabajador/perfil" enctype="multipart/form-data">
+
+            <div class="campo">
+                <label>Foto de perfil</label>
+                <input type="file" name="foto" accept="image/*"
+                    style="width:100%;padding:10px;border:2px dashed var(--primary);
+                           border-radius:8px;background:var(--bg);cursor:pointer;">
+            </div>
+
+            <div class="campo">
+                <label>Nombre</label>
+                <input type="text" name="nombre"
+                       value="{{ t.nombre }}" required autocomplete="off">
+            </div>
+
+            <div class="campo">
+                <label>Apellido</label>
+                <input type="text" name="apellido"
+                       value="{{ t.apellido or '' }}" autocomplete="off">
+            </div>
+
+            <div class="campo">
+                <label>Teléfono</label>
+                <input type="tel" name="telefono"
+                       value="{{ t.telefono or '' }}" autocomplete="off">
+            </div>
+
+            <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:8px;">
+                <p style="font-weight:bold;margin-bottom:12px;color:var(--text);">
+                    🔒 Cambiar contraseña (opcional)
+                </p>
+                <div class="campo">
+                    <label>Contraseña actual</label>
+                    <input type="password" name="password_actual"
+                           placeholder="Ingresa tu contraseña actual">
+                </div>
+                <div class="campo">
+                    <label>Nueva contraseña</label>
+                    <input type="password" name="nueva_password"
+                           placeholder="Mínimo 4 caracteres">
+                </div>
+                <div class="campo">
+                    <label>Confirmar nueva contraseña</label>
+                    <input type="password" name="confirmar_password"
+                           placeholder="Repite la nueva contraseña">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width:100%;margin-top:8px;">
+                💾 Guardar cambios
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

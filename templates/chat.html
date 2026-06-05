@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<!-- Encabezado con 3 puntitos -->
+<div style="display:flex;justify-content:space-between;align-items:center;
+            margin-bottom:16px;position:relative;">
+    <div style="display:flex;align-items:center;gap:10px;">
+        <a href="javascript:history.back()"
+           style="color:var(--text);font-size:22px;text-decoration:none;">←</a>
+        {% if otro_tipo == 'trabajador' %}
+            {% if otro.foto_perfil %}
+            <img src="/static/fotos/{{ otro.foto_perfil }}"
+                 style="width:38px;height:38px;border-radius:50%;object-fit:cover;">
+            {% else %}
+            <div style="width:38px;height:38px;border-radius:50%;background:var(--primary);
+                        display:flex;align-items:center;justify-content:center;font-size:18px;">
+                🧱
+            </div>
+            {% endif %}
+            <div>
+                <p style="font-weight:700;font-size:15px;margin:0;">
+                    {{ otro.nombre }} {{ otro.apellido or '' }}
+                </p>
+                <p style="font-size:12px;color:var(--text-muted);margin:0;">{{ otro.rol }}</p>
+            </div>
+        {% else %}
+            {% if otro.foto_perfil %}
+            <img src="/static/fotos/{{ otro.foto_perfil }}"
+                 style="width:38px;height:38px;border-radius:50%;object-fit:cover;">
+            {% else %}
+            <div style="width:38px;height:38px;border-radius:50%;background:var(--primary);
+                        display:flex;align-items:center;justify-content:center;font-size:18px;">
+                👷
+            </div>
+            {% endif %}
+            <div>
+                <p style="font-weight:700;font-size:15px;margin:0;">{{ otro.usuario }}</p>
+                <p style="font-size:12px;color:var(--text-muted);margin:0;">Contratista</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- 3 puntitos -->
+    <div style="position:relative;">
+        <button onclick="toggleMenuChat()"
+                style="background:none;border:none;cursor:pointer;
+                       font-size:24px;padding:8px;color:var(--text);">
+            ⋮
+        </button>
+        <div id="menu-chat"
+             style="display:none;position:absolute;right:0;top:44px;
+                    background:var(--surface);border-radius:12px;
+                    box-shadow:0 4px 20px rgba(0,0,0,0.2);
+                    min-width:180px;z-index:999;overflow:hidden;
+                    border:1px solid var(--border);">
+            <form method="POST" action="/chat/borrar"
+                  onsubmit="return confirm('¿Borrar todo el chat? No se puede deshacer.')">
+                <input type="hidden" name="rem_tipo"  value="{{ yo_tipo }}">
+                <input type="hidden" name="rem_id"    value="{{ yo_id }}">
+                <input type="hidden" name="dest_tipo" value="{{ otro_tipo }}">
+                <input type="hidden" name="dest_id"   value="{{ otro.id }}">
+                <button type="submit"
+                        style="width:100%;padding:14px 16px;background:none;border:none;
+                               cursor:pointer;text-align:left;color:#e65100;
+                               font-size:14px;font-weight:700;display:flex;
+                               align-items:center;gap:10px;">
+                    🗑️ Borrar chat
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Overlay para cerrar menú -->
+<div id="overlay-chat" onclick="toggleMenuChat()"
+     style="display:none;position:fixed;top:0;left:0;
+            width:100%;height:100%;z-index:998;"></div>
+
+<!-- Mensajes -->
+<div id="chat-box" style="height:calc(100vh - 220px);overflow-y:auto;
+     border:1px solid var(--border);border-radius:16px;padding:16px;
+     background:var(--bg);margin-bottom:16px;">
+
+    {% for m in mensajes %}
+    {% set es_mio = m.remitente_tipo == yo_tipo and m.remitente_id == yo_id %}
+    <div id="msg-{{ m.id }}"
+         style="display:flex;justify-content:{{ 'flex-end' if es_mio else 'flex-start' }};
+                margin-bottom:10px;align-items:flex-end;gap:6px;">
+
+        {% if es_mio %}
+        <button onclick="eliminarMensaje({{ m.id }})" title="Eliminar"
+                style="background:none;border:none;cursor:pointer;font-size:14px;
+                       opacity:0.4;padding:4px;flex-shrink:0;color:var(--text);">
+            🗑️
+        </button>
+        {% endif %}
+
+        <div style="max-width:72%;padding:10px 14px;border-radius:16px;
+                    background:{{ 'var(--primary)' if es_mio else 'var(--surface)' }};
+                    color:{{ '#1a1a1a' if es_mio else 'var(--text)' }};
+                    box-shadow:0 1px 4px rgba(0,0,0,0.1);">
+            <p style="margin:0;font-size:14px;word-break:break-word;">{{ m.contenido }}</p>
+            <p style="margin:4px 0 0;font-size:11px;opacity:0.6;text-align:right;">
+                {{ m.fecha.strftime('%H:%M') }}
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div id="mensajes-nuevos"></div>
+</div>
+
+<!-- Input -->
+<div style="display:flex;gap:10px;align-items:center;">
+    <input type="text" id="input-mensaje"
+           placeholder="Escribe un mensaje..."
+           style="flex:1;padding:12px 16px;border:1px solid var(--border);
+                  border-radius:24px;font-size:14px;background:var(--surface);
+                  color:var(--text);outline:none;"
+           onkeypress="if(event.key==='Enter') enviar()">
+    <button onclick="enviar()"
+            style="background:var(--primary);border:none;border-radius:50%;
+                   width:46px;height:46px;cursor:pointer;font-size:20px;
+                   display:flex;align-items:center;justify-content:center;
+                   flex-shrink:0;color:#1a1a1a;">
+        ➤
+    </button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+const socket    = io();
+const room      = "{{ room }}";
+const yo_tipo   = "{{ yo_tipo }}";
+const yo_id     = {{ yo_id }};
+const dest_tipo = "{{ otro_tipo }}";
+const dest_id   = {{ otro.id }};
+
+socket.emit('join', { room: room });
+
+socket.on('nuevo_mensaje', (data) => {
+    const esMio = data.remitente_tipo === yo_tipo && data.remitente_id === yo_id;
+    const wrap = document.createElement('div');
+    wrap.id = 'msg-' + data.id;
+    wrap.style.cssText = `display:flex;justify-content:${esMio?'flex-end':'flex-start'};margin-bottom:10px;align-items:flex-end;gap:6px;`;
+    const btnElim = esMio ? `<button onclick="eliminarMensaje(${data.id})"
+        style="background:none;border:none;cursor:pointer;font-size:14px;
+               opacity:0.4;padding:4px;flex-shrink:0;">🗑️</button>` : '';
+    wrap.innerHTML = `${btnElim}
+        <div style="max-width:72%;padding:10px 14px;border-radius:16px;
+                    background:${esMio?'var(--primary)':'var(--surface)'};
+                    color:${esMio?'#1a1a1a':'var(--text)'};
+                    box-shadow:0 1px 4px rgba(0,0,0,0.1);">
+            <p style="margin:0;font-size:14px;word-break:break-word;">${data.contenido}</p>
+            <p style="margin:4px 0 0;font-size:11px;opacity:0.6;text-align:right;">${data.fecha}</p>
+        </div>`;
+    document.getElementById('mensajes-nuevos').appendChild(wrap);
+    scrollAbajo();
+});
+
+function enviar() {
+    const input = document.getElementById('input-mensaje');
+    const texto = input.value.trim();
+    if (!texto) return;
+    socket.emit('mensaje', {
+        room, contenido: texto,
+        remitente_tipo: yo_tipo, remitente_id: yo_id,
+        destinatario_tipo: dest_tipo, destinatario_id: dest_id
+    });
+    input.value = '';
+}
+
+function eliminarMensaje(id) {
+    if (!confirm('¿Eliminar este mensaje?')) return;
+    fetch(`/mensaje/eliminar/${id}`, { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            const el = document.getElementById('msg-' + id);
+            if (el) el.remove();
+        }
+    });
+}
+
+function toggleMenuChat() {
+    const m = document.getElementById('menu-chat');
+    const o = document.getElementById('overlay-chat');
+    const abierto = m.style.display === 'block';
+    m.style.display = abierto ? 'none' : 'block';
+    o.style.display = abierto ? 'none' : 'block';
+}
+
+function scrollAbajo() {
+    const box = document.getElementById('chat-box');
+    box.scrollTop = box.scrollHeight;
+}
+scrollAbajo();
+</script>
+
+{% endblock %}

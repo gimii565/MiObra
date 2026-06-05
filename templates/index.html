@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div style="height:calc(100vh - 56px);display:flex;flex-direction:column;
+            align-items:center;justify-content:center;padding:16px;
+            box-sizing:border-box;">
+
+    <!-- Logo -->
+    <img src="/static/logo.png"
+         style="width:min(100px, 22vw);height:min(100px, 22vw);object-fit:contain;
+                margin-bottom:10px;border-radius:22px;
+                box-shadow:0 8px 32px rgba(240,165,0,0.3);">
+
+    <h1 style="font-size:clamp(22px, 6vw, 32px);font-weight:800;
+               color:var(--text);margin-bottom:4px;">
+        MiObra
+    </h1>
+    <p style="color:var(--text-muted);font-size:clamp(12px, 3.5vw, 15px);
+              margin-bottom:clamp(16px, 4vh, 32px);text-align:center;">
+        Control de jornales y pagos en obras
+    </p>
+
+    <!-- Cards -->
+    <div style="display:flex;flex-direction:column;gap:clamp(8px, 2vh, 14px);
+                width:100%;max-width:360px;">
+
+        <a href="/login" style="text-decoration:none;">
+            <div style="background:var(--surface);border-radius:16px;
+                        padding:clamp(12px, 3vh, 20px) 20px;
+                        display:flex;align-items:center;gap:16px;
+                        border:2px solid var(--border);box-shadow:var(--card-shadow);
+                        transition:all 0.2s;"
+                 onmouseover="this.style.borderColor='var(--primary)'"
+                 onmouseout="this.style.borderColor='var(--border)'">
+                <img src="/static/icon_contratista.png"
+                     style="width:clamp(50px, 14vw, 70px);height:clamp(50px, 14vw, 70px);
+                            object-fit:contain;flex-shrink:0;">
+                <div>
+                    <p style="font-size:clamp(16px, 4.5vw, 20px);font-weight:700;
+                               color:var(--primary);margin:0 0 2px;">
+                        Contratista
+                    </p>
+                    <p style="font-size:clamp(11px, 3vw, 13px);color:var(--text-muted);margin:0;">
+                        Gestionar obras y pagos
+                    </p>
+                </div>
+            </div>
+        </a>
+
+        <a href="/trabajador/login" style="text-decoration:none;">
+            <div style="background:var(--surface);border-radius:16px;
+                        padding:clamp(12px, 3vh, 20px) 20px;
+                        display:flex;align-items:center;gap:16px;
+                        border:2px solid var(--border);box-shadow:var(--card-shadow);
+                        transition:all 0.2s;"
+                 onmouseover="this.style.borderColor='var(--primary)'"
+                 onmouseout="this.style.borderColor='var(--border)'">
+                <img src="/static/icon_trabajador.png"
+                     style="width:clamp(50px, 14vw, 70px);height:clamp(50px, 14vw, 70px);
+                            object-fit:contain;flex-shrink:0;">
+                <div>
+                    <p style="font-size:clamp(16px, 4.5vw, 20px);font-weight:700;
+                               color:var(--primary);margin:0 0 2px;">
+                        Trabajador
+                    </p>
+                    <p style="font-size:clamp(11px, 3vw, 13px);color:var(--text-muted);margin:0;">
+                        Ver mis días y saldo
+                    </p>
+                </div>
+            </div>
+        </a>
+
+    </div>
+
+    <p style="margin-top:clamp(10px, 2vh, 20px);font-size:11px;color:var(--text-muted);">
+        MiObra v1.0 — Hecho para la construcción 🏗️
+    </p>
+</div>
+
+{% endblock %}

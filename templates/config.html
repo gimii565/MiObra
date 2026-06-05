@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>⚙️ Configuración</h1>
+    <a href="/" class="btn-secondary">← Volver</a>
+</div>
+
+<div class="card" style="max-width:500px;">
+    <h3 style="margin-bottom:16px;color:var(--primary);">Apariencia</h3>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+        <div>
+            <p style="font-weight:bold;">Tema</p>
+            <p style="font-size:13px;color:var(--text-muted);">Cambia entre modo claro y oscuro</p>
+        </div>
+        <button onclick="toggleTema()" id="btn-config-tema"
+            style="padding:8px 16px;border-radius:20px;border:2px solid var(--primary);
+                   background:var(--primary);color:var(--primary-text);cursor:pointer;font-weight:bold;">
+        </button>
+    </div>
+
+    <div style="padding-top:16px;">
+        <h3 style="margin-bottom:12px;color:var(--primary);">Acerca de</h3>
+        <p style="font-size:14px;color:var(--text-muted);">MiObra v1.0</p>
+        <p style="font-size:14px;color:var(--text-muted);">Sistema digital de control de jornales</p>
+    </div>
+</div>
+
+<script>
+    function actualizarBoton() {
+        const esOscuro = document.body.classList.contains('oscuro');
+        const btn = document.getElementById('btn-config-tema');
+        if (btn) btn.textContent = esOscuro ? '☀️ Modo claro' : '🌙 Modo oscuro';
+    }
+    actualizarBoton();
+
+    function toggleTema() {
+        const esOscuro = document.body.classList.toggle('oscuro');
+        localStorage.setItem('tema', esOscuro ? 'oscuro' : 'claro');
+        const btnNav = document.getElementById('btn-tema');
+        if (btnNav) btnNav.textContent = esOscuro ? '☀️' : '🌙';
+        actualizarBoton();
+    }
+</script>
+
+{% endblock %}

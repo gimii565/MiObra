@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>📦 Archivados</h1>
+    <a href="/obra/{{ obra.id }}" class="btn-secondary">← Volver</a>
+</div>
+
+<p style="color:var(--text-muted);margin-bottom:16px;font-size:14px;">
+    Trabajadores archivados de <strong>{{ obra.nombre }}</strong>
+</p>
+
+{% if resumen %}
+    <div class="grid-obras">
+        {% for r in resumen %}
+        {% set t = r.trabajador %}
+        <div class="card" style="opacity:0.85;">
+            <h2 style="color:var(--text-muted);">{{ t.nombre }} {{ t.apellido or '' }}</h2>
+            <p>Rol: <strong>{{ t.rol }}</strong></p>
+            <p>Sueldo por día: <strong>Bs. {{ t.jornal_dia }}</strong></p>
+
+            {% if r.deuda_total > 0 %}
+            <div style="margin-top:8px;padding:10px;background:#fff3cd;border-radius:8px;">
+                <p style="font-size:13px;color:#7a5500;">⚠️ Deuda pendiente:</p>
+                <p style="font-size:18px;font-weight:bold;color:#e65100;">Bs. {{ r.deuda_total }}</p>
+            </div>
+            {% else %}
+            <div style="margin-top:8px;padding:10px;background:#d4edda;border-radius:8px;">
+                <p style="font-size:13px;color:#155724;">✅ Sin deudas</p>
+            </div>
+            {% endif %}
+
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+                <a href="/trabajador/{{ t.id }}/semana?obra_id={{ obra.id }}" class="btn-secondary">
+                    📋 Ver historial
+                </a>
+                <form method="POST" action="/trabajador/{{ t.id }}/desarchivar">
+                    <input type="hidden" name="obra_id" value="{{ obra.id }}">
+                    <button type="submit"
+                            style="background:#d4edda;color:#155724;border:none;
+                                   padding:10px 14px;border-radius:24px;cursor:pointer;
+                                   font-size:13px;font-weight:700;margin-top:8px;">
+                        ✅ Desarchivar
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="vacio">
+        <p>No hay trabajadores archivados.</p>
+    </div>
+{% endif %}
+
+{% endblock %}

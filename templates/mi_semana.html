@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>{{ trabajador.nombre }}</h1>
+    <a href="/trabajador/inicio" class="btn-secondary">← Volver</a>
+</div>
+
+{% if obra %}
+<div style="margin-bottom:12px;padding:10px 14px;background:var(--secondary-bg);
+            border-radius:10px;border-left:4px solid var(--primary);">
+    <p style="font-size:13px;color:var(--text-muted);margin:0;">Obra actual</p>
+    <p style="font-size:16px;font-weight:700;color:var(--primary);margin:0;">
+        🏗️ {{ obra.nombre }}
+    </p>
+</div>
+{% endif %}
+
+<div class="card" style="margin-bottom:20px;background:#f0f7ff;">
+    <p>Obra: <strong>{{ obra.nombre if obra else '—' }}</strong></p>
+    <p>Rol: <strong>{{ trabajador.rol }}</strong></p>
+    <p>Sueldo por día: <strong>Bs. {{ trabajador.jornal_dia }}</strong></p>
+    <h2 style="margin-top:10px;color:#1a73e8;">Saldo pendiente: Bs. {{ saldo_total }}</h2>
+</div>
+
+<h2 style="margin-bottom:15px;">Semana actual</h2>
+<div class="card" style="margin-bottom:20px;">
+    <p style="color:#888;margin-bottom:15px;">Del {{ semana.fecha_inicio }}</p>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#f0f0f0;">
+                <th style="padding:10px;text-align:left;">Día</th>
+                <th style="padding:10px;text-align:center;">Asistencia</th>
+                <th style="padding:10px;text-align:right;">Ganado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set dias_semana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'] %}
+            {% for dia in dias_semana %}
+            {% set asist = asistencias.get(dia) %}
+            {% set tipo = asist.tipo if asist else 'ninguno' %}
+            <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:10px;text-transform:capitalize;font-weight:bold;">{{ dia }}</td>
+                <td style="padding:10px;text-align:center;">
+                    {% if tipo == 'completo' %}
+                        <span style="color:green;">✅ Día completo</span>
+                    {% elif tipo == 'medio' %}
+                        <span style="color:orange;">☀️ Medio día</span>
+                    {% elif tipo == 'noche' %}
+                        <span style="color:#004085;">🌙 Solo noche</span>
+                    {% elif tipo == 'medio_noche' %}
+                        <span style="color:orange;">☀️🌙 Medio + Noche</span>
+                    {% elif tipo == 'completo_noche' %}
+                        <span style="color:green;">✅🌙 Completo + Noche</span>
+                    {% else %}
+                        <span style="color:#ccc;">— No trabajó</span>
+                    {% endif %}
+                </td>
+                <td style="padding:10px;text-align:right;font-weight:bold;">
+                    {% if tipo == 'completo' %}Bs. {{ trabajador.jornal_dia }}
+                    {% elif tipo == 'medio' %}Bs. {{ trabajador.jornal_dia / 2 }}
+                    {% elif tipo == 'noche' %}Bs. {{ trabajador.jornal_noche }}
+                    {% elif tipo == 'medio_noche' %}Bs. {{ (trabajador.jornal_dia / 2) + trabajador.jornal_noche }}
+                    {% elif tipo == 'completo_noche' %}Bs. {{ trabajador.jornal_dia + trabajador.jornal_noche }}
+                    {% else %}—
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if semana.pagos %}
+<h2 style="margin-bottom:15px;">Pagos recibidos esta semana</h2>
+<div class="card">
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#f0f0f0;">
+                <th style="padding:8px;text-align:left;">Fecha</th>
+                <th style="padding:8px;text-align:left;">Nota</th>
+                <th style="padding:8px;text-align:right;">Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pago in semana.pagos %}
+            <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:8px;">{{ pago.fecha }}</td>
+                <td style="padding:8px;">{{ pago.nota }}</td>
+                <td style="padding:8px;text-align:right;color:green;font-weight:bold;">Bs. {{ pago.monto }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>{{ trabajador.nombre }}</h1>
+    <a href="/obra/{{ semana.obra_id or trabajador.obra_id }}" class="btn-secondary">← Volver</a>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <p>Rol: <strong>{{ trabajador.rol }}</strong></p>
+    <p>Jornal día: <strong>Bs. {{ trabajador.jornal_dia }}</strong></p>
+    <p>Jornal noche: <strong>Bs. {{ trabajador.jornal_noche }}</strong></p>
+    <p>Semana del: <strong>{{ semana.fecha_inicio }}</strong></p>
+    <p>Saldo anterior: <strong>Bs. {{ semana.saldo_anterior }}</strong></p>
+    <h2 style="margin-top:10px;">Saldo esta semana: <span id="saldo-total" style="color:var(--primary);">Bs. {{ saldo_semana }}</span></h2>
+</div>
+
+<h2 style="margin-bottom:15px;">Asistencia de la semana</h2>
+<div class="card" style="margin-bottom:20px;"
+    data-semana-id="{{ semana.id }}"
+    data-jornal-dia="{{ trabajador.jornal_dia }}"
+    data-jornal-noche="{{ trabajador.jornal_noche }}">
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:var(--bg);">
+                <th style="padding:10px;text-align:left;">Día</th>
+                <th style="padding:10px;text-align:center;">Medio</th>
+                <th style="padding:10px;text-align:center;">Completo</th>
+                <th style="padding:10px;text-align:center;">Noche</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set dias_semana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'] %}
+            {% for dia in dias_semana %}
+            {% set asist = asistencias.get(dia) %}
+            {% set tipo_actual = asist.tipo if asist else 'ninguno' %}
+            <tr style="border-bottom:1px solid var(--border);" id="fila-{{ dia }}" data-tipo-actual="{{ tipo_actual }}">
+                <td style="padding:10px;text-transform:capitalize;font-weight:bold;font-size:13px;">{{ dia }}</td>
+                <td style="padding:6px;text-align:center;">
+                    <button onclick="marcar('{{ dia }}', 'medio')" id="btn-{{ dia }}-medio"
+                        class="btn-asist {% if tipo_actual == 'medio' or tipo_actual == 'medio_noche' %}activo-medio{% endif %}">
+                        ☀️ Medio
+                    </button>
+                </td>
+                <td style="padding:6px;text-align:center;">
+                    <button onclick="marcar('{{ dia }}', 'completo')" id="btn-{{ dia }}-completo"
+                        class="btn-asist {% if tipo_actual == 'completo' or tipo_actual == 'completo_noche' %}activo-completo{% endif %}">
+                        ✅ Comp.
+                    </button>
+                </td>
+                <td style="padding:6px;text-align:center;">
+                    <button onclick="marcar('{{ dia }}', 'noche')" id="btn-{{ dia }}-noche"
+                        class="btn-asist {% if tipo_actual == 'noche' or tipo_actual == 'medio_noche' or tipo_actual == 'completo_noche' %}activo-noche{% endif %}">
+                        🌙 Noche
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card" style="margin-bottom:20px;background:var(--secondary-bg);">
+    <h3 style="margin-bottom:12px;color:var(--primary);">Resumen de la semana</h3>
+    <table style="width:100%;border-collapse:collapse;">
+        <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:8px;">Días completos</td>
+            <td style="padding:8px;text-align:right;font-weight:bold;" id="res-completos">0</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:8px;">Medios días</td>
+            <td style="padding:8px;text-align:right;font-weight:bold;" id="res-medios">0</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:8px;">Turnos de noche</td>
+            <td style="padding:8px;text-align:right;font-weight:bold;" id="res-noches">0</td>
+        </tr>
+        <tr style="background:var(--bg);">
+            <td style="padding:10px;font-weight:bold;">Total ganado</td>
+            <td style="padding:10px;text-align:right;font-weight:bold;color:var(--primary);font-size:18px;" id="res-total">Bs. 0</td>
+        </tr>
+    </table>
+</div>
+
+<div class="encabezado">
+    <h2>Pagos y Adelantos</h2>
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+    <form method="POST" action="/semana/{{ semana.id }}/pago">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+            <div class="campo" style="flex:1;min-width:120px;">
+                <label>Monto (Bs.)</label>
+                <input type="number" name="monto" placeholder="0" step="0.01" required>
+            </div>
+            <div class="campo" style="flex:2;min-width:150px;">
+                <label>Nota</label>
+                <input type="text" name="nota" placeholder="Ej: Adelanto viernes" autocomplete="off">
+            </div>
+            <button type="submit" class="btn-primary" style="margin-bottom:12px;">Registrar Pago</button>
+        </div>
+    </form>
+
+    {% if semana.pagos %}
+    <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+        <thead>
+            <tr style="background:var(--bg);">
+                <th style="padding:8px;text-align:left;">Fecha</th>
+                <th style="padding:8px;text-align:left;">Nota</th>
+                <th style="padding:8px;text-align:right;">Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pago in semana.pagos %}
+            <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:8px;">{{ pago.fecha }}</td>
+                <td style="padding:8px;">{{ pago.nota }}</td>
+                <td style="padding:8px;text-align:right;color:#28a745;font-weight:bold;">Bs. {{ pago.monto }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:var(--text-muted);text-align:center;padding:20px;">No hay pagos registrados esta semana.</p>
+    {% endif %}
+</div>
+
+<script>
+const diasSemana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+const asistencias = {};
+document.querySelectorAll('[id^="fila-"]').forEach(tr => {
+    const dia = tr.id.replace('fila-', '');
+    asistencias[dia] = tr.dataset.tipoActual;
+});
+
+const jornalDia   = parseFloat(document.querySelector('[data-jornal-dia]').dataset.jornalDia);
+const jornalNoche = parseFloat(document.querySelector('[data-jornal-noche]').dataset.jornalNoche);
+const semanaId    = document.querySelector('[data-semana-id]').dataset.semanaId;
+const fechaInicio = new Date("{{ semana.fecha_inicio }}T00:00:00");
+const hoy = new Date();
+hoy.setHours(23, 59, 59, 0);
+
+diasSemana.forEach((dia, idx) => {
+    const fechaDia = new Date(fechaInicio);
+    fechaDia.setDate(fechaInicio.getDate() + idx);
+    fechaDia.setHours(0, 0, 0, 0);
+    if (fechaDia > hoy) {
+        ['medio','completo','noche'].forEach(tipo => {
+            const btn = document.getElementById(`btn-${dia}-${tipo}`);
+            if (btn) { btn.disabled = true; btn.title = 'Aún no es este día'; }
+        });
+    }
+});
+
+function marcar(dia, tipo) {
+    const idx = diasSemana.indexOf(dia);
+    const fechaDia = new Date(fechaInicio);
+    fechaDia.setDate(fechaInicio.getDate() + idx);
+    fechaDia.setHours(0, 0, 0, 0);
+    if (fechaDia > hoy) return;
+
+    const actual = asistencias[dia];
+    let nuevo;
+
+    if (tipo === 'medio') {
+        if (actual === 'ninguno')             nuevo = 'medio';
+        else if (actual === 'medio')          nuevo = 'ninguno';
+        else if (actual === 'completo')       nuevo = 'medio';
+        else if (actual === 'noche')          nuevo = 'medio_noche';
+        else if (actual === 'medio_noche')    nuevo = 'ninguno';
+        else if (actual === 'completo_noche') nuevo = 'noche';
+    } else if (tipo === 'completo') {
+        if (actual === 'ninguno')             nuevo = 'completo';
+        else if (actual === 'completo')       nuevo = 'ninguno';
+        else if (actual === 'medio')          nuevo = 'completo';
+        else if (actual === 'noche')          nuevo = 'completo_noche';
+        else if (actual === 'completo_noche') nuevo = 'noche';
+        else if (actual === 'medio_noche')    nuevo = 'completo_noche';
+    } else if (tipo === 'noche') {
+        if (actual === 'ninguno')             nuevo = 'noche';
+        else if (actual === 'noche')          nuevo = 'ninguno';
+        else if (actual === 'medio')          nuevo = 'medio_noche';
+        else if (actual === 'completo')       nuevo = 'completo_noche';
+        else if (actual === 'medio_noche')    nuevo = 'medio';
+        else if (actual === 'completo_noche') nuevo = 'completo';
+    }
+
+    fetch('/api/asistencia', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ semana_id: semanaId, dia: dia, tipo: nuevo })
+    })
+    .then(res => res.json())
+    .then(data => {
+        asistencias[dia] = nuevo;
+        actualizarBotones(dia, nuevo);
+        actualizarResumen();
+        document.getElementById('saldo-total').textContent = 'Bs. ' + data.saldo;
+    });
+}
+
+function actualizarBotones(dia, tipo) {
+    const btnMedio    = document.getElementById(`btn-${dia}-medio`);
+    const btnCompleto = document.getElementById(`btn-${dia}-completo`);
+    const btnNoche    = document.getElementById(`btn-${dia}-noche`);
+    btnMedio.classList.remove('activo-medio');
+    btnCompleto.classList.remove('activo-completo');
+    btnNoche.classList.remove('activo-noche');
+    if (tipo === 'medio')               btnMedio.classList.add('activo-medio');
+    else if (tipo === 'completo')       btnCompleto.classList.add('activo-completo');
+    else if (tipo === 'noche')          btnNoche.classList.add('activo-noche');
+    else if (tipo === 'medio_noche')    { btnMedio.classList.add('activo-medio'); btnNoche.classList.add('activo-noche'); }
+    else if (tipo === 'completo_noche') { btnCompleto.classList.add('activo-completo'); btnNoche.classList.add('activo-noche'); }
+}
+
+function actualizarResumen() {
+    let completos = 0, medios = 0, noches = 0;
+    diasSemana.forEach(dia => {
+        const tipo = asistencias[dia];
+        if (tipo === 'completo')            completos++;
+        else if (tipo === 'medio')          medios++;
+        else if (tipo === 'noche')          noches++;
+        else if (tipo === 'medio_noche')    { medios++; noches++; }
+        else if (tipo === 'completo_noche') { completos++; noches++; }
+    });
+    const total = (completos * jornalDia) + (medios * jornalDia / 2) + (noches * jornalNoche);
+    document.getElementById('res-completos').textContent = completos;
+    document.getElementById('res-medios').textContent    = medios;
+    document.getElementById('res-noches').textContent    = noches;
+    document.getElementById('res-total').textContent     = 'Bs. ' + total.toFixed(2);
+}
+
+actualizarResumen();
+</script>
+
+{% endblock %}

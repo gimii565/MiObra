@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>🏗️ Mis Obras</h1>
+    <a href="/obra/nueva" class="btn-primary">+ Nueva Obra</a>
+</div>
+
+<!-- Buscador -->
+<div style="margin-bottom:16px;">
+    <input type="text" id="buscador-obras" placeholder="🔍 Buscar obra..."
+           oninput="filtrarObras(this.value)"
+           style="width:100%;padding:12px 16px;border:1px solid var(--border);
+                  border-radius:24px;font-size:14px;background:var(--surface);
+                  color:var(--text);outline:none;">
+</div>
+
+{% if obras %}
+<div class="grid-obras" id="lista-obras">
+    {% for obra in obras %}
+    <div class="card obra-card" data-nombre="{{ obra.nombre|lower }}">
+        <h2>{{ obra.nombre }}</h2>
+        <p>{{ obra.descripcion }}</p>
+        <p>Presupuesto: <strong>Bs. {{ obra.presupuesto_total }}</strong></p>
+        <p>Inicio: {{ obra.fecha_inicio.strftime('%d/%m/%Y') }}</p>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+            <a href="/obra/{{ obra.id }}" class="btn-primary">Ver obra</a>
+            <form method="POST" action="/obra/{{ obra.id }}/eliminar"
+                  onsubmit="return confirm('¿Eliminar la obra {{ obra.nombre }}?')">
+                <button type="submit"
+                        style="background:#ffe0e0;color:#c00;border:none;
+                               padding:10px 16px;border-radius:24px;cursor:pointer;
+                               font-size:14px;font-weight:700;margin-top:8px;">
+                    🗑️ Eliminar
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="vacio">
+    <p>No tienes obras activas.</p>
+    <a href="/obra/nueva" class="btn-primary">Crear primera obra</a>
+</div>
+{% endif %}
+
+<script>
+function filtrarObras(q) {
+    document.querySelectorAll('.obra-card').forEach(card => {
+        const nombre = card.dataset.nombre;
+        card.style.display = nombre.includes(q.toLowerCase()) ? '' : 'none';
+    });
+}
+</script>
+
+{% endblock %}

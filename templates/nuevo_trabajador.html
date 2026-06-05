@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>Agregar Trabajador</h1>
+    <a href="/obra/{{ obra.id }}" class="btn-secondary">← Volver</a>
+</div>
+
+<div class="card" style="max-width:500px;">
+    <h3 style="margin-bottom:16px;color:var(--primary);">🔍 Buscar trabajador registrado</h3>
+
+    <div class="campo">
+        <label>Buscar por nombre o apellido</label>
+        <input type="text" id="buscador" placeholder="Ej: Juan Pérez"
+               oninput="buscar(this.value)" autocomplete="off">
+    </div>
+
+    <div id="resultados" style="margin-bottom:16px;"></div>
+
+    <div id="formulario-invitar" style="display:none;">
+        <div style="padding:12px;background:#f0f7ff;border-radius:8px;margin-bottom:16px;">
+            <p style="font-weight:bold;" id="nombre-seleccionado"></p>
+            <p style="font-size:13px;color:var(--text-muted);" id="tel-seleccionado"></p>
+        </div>
+        <form method="POST" action="/obra/{{ obra.id }}/invitar">
+            <input type="hidden" name="trabajador_id" id="trabajador_id_input">
+            <div class="campo">
+                <label>Rol</label>
+                <select name="rol">
+                    <option value="maestro">Maestro Albañil</option>
+                    <option value="ayuco">Ayuco</option>
+                </select>
+            </div>
+            <div class="campo">
+                <label>Sueldo por día (Bs.)</label>
+                <input type="number" name="jornal_dia" placeholder="Ej: 120" step="0.01" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;">
+                📨 Enviar invitación
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+let timer;
+function buscar(q) {
+    clearTimeout(timer);
+    if (q.length < 2) {
+        document.getElementById('resultados').innerHTML = '';
+        document.getElementById('formulario-invitar').style.display = 'none';
+        return;
+    }
+    timer = setTimeout(() => {
+        fetch(`/api/buscar-trabajadores?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(lista => {
+            const div = document.getElementById('resultados');
+            if (lista.length === 0) {
+                div.innerHTML = '<p style="color:#888;font-size:14px;">No se encontraron trabajadores.</p>';
+                return;
+            }
+            div.innerHTML = lista.map(t => `
+                <div onclick="seleccionar(${t.id}, '${t.nombre} ${t.apellido}', '${t.telefono}')"
+                     style="padding:12px;border:1px solid var(--border);border-radius:8px;
+                            margin-bottom:6px;cursor:pointer;background:var(--bg);"
+                     onmouseover="this.style.background='#fff8e1'"
+                     onmouseout="this.style.background=''">
+                    <strong>${t.nombre} ${t.apellido}</strong>
+                    <span style="color:#888;font-size:13px;margin-left:8px;">📞 ${t.telefono}</span>
+                </div>
+            `).join('');
+        });
+    }, 300);
+}
+
+function seleccionar(id, nombre, tel) {
+    document.getElementById('trabajador_id_input').value = id;
+    document.getElementById('nombre-seleccionado').textContent = '👤 ' + nombre;
+    document.getElementById('tel-seleccionado').textContent = '📞 ' + tel;
+    document.getElementById('formulario-invitar').style.display = 'block';
+    document.getElementById('resultados').innerHTML = '';
+    document.getElementById('buscador').value = nombre;
+}
+</script>
+
+{% endblock %}

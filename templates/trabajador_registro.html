@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div class="formulario" style="width:100%;">
+
+        <div style="text-align:center;margin-bottom:24px;">
+            <img src="/static/icon_trabajador.png"
+                 style="width:70px;height:70px;object-fit:contain;margin-bottom:10px;">
+            <h1 style="font-size:22px;font-weight:800;">Crear cuenta</h1>
+            <p style="color:var(--text-muted);font-size:14px;">Trabajador</p>
+        </div>
+
+        {% if error %}
+        <div style="background:#ffe0e0;border:1px solid #ff6b6b;border-radius:10px;
+                    padding:10px;margin-bottom:16px;color:#c00;font-size:14px;">
+            ❌ {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/trabajador/registro" enctype="multipart/form-data">
+            <div class="campo">
+                <label>Nombre</label>
+                <input type="text" name="nombre" placeholder="Tu nombre" required autocomplete="off">
+            </div>
+            <div class="campo">
+                <label>Apellido</label>
+                <input type="text" name="apellido" placeholder="Tu apellido" autocomplete="off">
+            </div>
+            <div class="campo">
+                <label>Usuario</label>
+                <input type="text" name="usuario" placeholder="Ej: juan123" required autocomplete="off">
+            </div>
+            <div class="campo">
+                <label>Teléfono (opcional)</label>
+                <input type="tel" name="telefono" placeholder="Ej: 70000000" autocomplete="off">
+            </div>
+            <div class="campo">
+                <label>Foto de perfil (opcional)</label>
+                <input type="file" name="foto" accept="image/*"
+                       style="width:100%;padding:10px;border:2px dashed var(--primary);
+                              border-radius:12px;background:var(--bg);cursor:pointer;">
+            </div>
+            <div class="campo">
+                <label>Contraseña</label>
+                <input type="password" name="password" placeholder="Mínimo 4 caracteres" required>
+            </div>
+            <div class="campo">
+                <label>Confirmar contraseña</label>
+                <input type="password" name="confirmar" placeholder="Repite la contraseña" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;margin-top:8px;">
+                Crear cuenta
+            </button>
+        </form>
+
+        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--text-muted);">
+            ¿Ya tienes cuenta?
+            <a href="/trabajador/login" style="color:var(--primary);font-weight:700;">
+                Iniciar sesión
+            </a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

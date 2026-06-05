@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>Hola, {{ t.nombre }} 👋</h1>
+    <a href="/trabajador/perfil" class="btn-secondary">👤 Mi Perfil</a>
+</div>
+
+{% if solicitudes %}
+<div style="margin-bottom:20px;">
+    <h2 style="margin-bottom:12px;color:#e65100;">
+        🔔 Solicitudes pendientes ({{ solicitudes|length }})
+    </h2>
+    {% for s in solicitudes %}
+    <div class="card" style="border-left:4px solid #e8a000;margin-bottom:12px;">
+        <p style="font-weight:bold;margin-bottom:6px;">
+            👷 <strong>{{ s.contratista.usuario }}</strong> te invita a unirte a:
+        </p>
+        <p style="font-size:18px;color:var(--primary);font-weight:bold;margin-bottom:6px;">
+            🏗️ {{ s.obra.nombre }}
+        </p>
+        {% if s.obra.descripcion %}
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:6px;">{{ s.obra.descripcion }}</p>
+        {% endif %}
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+            📅 {{ s.fecha.strftime('%d/%m/%Y') }}
+        </p>
+        <div style="display:flex;gap:10px;">
+            <a href="/solicitud/{{ s.id }}/revisar" class="btn-primary" style="background:#28a745;">✅ Ver y decidir</a>
+            <form method="POST" action="/solicitud/{{ s.id }}/responder" style="margin:0;">
+                <input type="hidden" name="accion" value="rechazar">
+                <button type="submit" style="background:#ffe0e0;color:#c00;border:none;
+                   padding:10px 16px;border-radius:24px;cursor:pointer;
+                   font-size:14px;font-weight:bold;">❌ Rechazar</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<h2 style="margin-bottom:15px;">🏗️ Mis Obras</h2>
+
+{% if obras %}
+    <div class="grid-obras">
+        {% for obra in obras %}
+        <div class="card">
+            <h2>{{ obra.nombre }}</h2>
+            {% if obra.descripcion %}
+            <p style="color:var(--text-muted);margin-bottom:6px;">{{ obra.descripcion }}</p>
+            {% endif %}
+            <p style="font-size:13px;margin-bottom:4px;">
+                Contratista: <strong>{{ obra.usuario.usuario }}</strong>
+            </p>
+            {% if obra.usuario.nombre_completo %}
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">{{ obra.usuario.nombre_completo }}</p>
+            {% endif %}
+            {% if obra.usuario.telefono %}
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">📞 {{ obra.usuario.telefono }}</p>
+            {% endif %}
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+                <a href="/mi-semana/{{ t.id }}?obra_id={{ obra.id }}" class="btn-primary">
+                    📅 Ver mi semana
+                </a>
+                <a href="/trabajador/salir-obra/{{ obra.id }}"
+                   onclick="return confirm('¿Seguro que quieres salirte de esta obra?')"
+                   style="display:inline-block;padding:10px 16px;border-radius:6px;
+                          text-decoration:none;background:#ffe0e0;color:#c00;
+                          font-size:14px;font-weight:bold;">
+                    🚪 Salirme
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="vacio">
+        <p>Aún no estás en ninguna obra.</p>
+        <p style="font-size:14px;color:var(--text-muted);margin-top:8px;">
+            Espera que un contratista te invite.
+        </p>
+    </div>
+{% endif %}
+
+{% if obras_archivadas %}
+<h2 style="margin-bottom:15px;margin-top:30px;color:var(--text-muted);">📦 Obras con deuda pendiente</h2>
+<div class="grid-obras">
+    {% for item in obras_archivadas %}
+    <div class="card" style="opacity:0.85;border-left:4px solid #e8a000;">
+        <h2 style="color:var(--text-muted);">{{ item.to.obra.nombre }}</h2>
+        {% if item.to.obra.descripcion %}
+        <p style="color:var(--text-muted);margin-bottom:6px;">{{ item.to.obra.descripcion }}</p>
+        {% endif %}
+        <p style="font-size:13px;margin-bottom:4px;">
+            Contratista: <strong>{{ item.to.obra.usuario.usuario }}</strong>
+        </p>
+        {% if item.to.obra.usuario.telefono %}
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">
+            📞 {{ item.to.obra.usuario.telefono }}
+        </p>
+        {% endif %}
+        <div style="margin-top:8px;padding:10px;background:#fff3cd;border-radius:8px;">
+            <p style="font-size:13px;color:#7a5500;">⚠️ Te deben:</p>
+            <p style="font-size:18px;font-weight:bold;color:#e65100;">Bs. {{ item.deuda }}</p>
+        </div>
+        <div style="margin-top:10px;">
+            <a href="/mi-semana/{{ t.id }}?obra_id={{ item.to.obra.id }}" class="btn-secondary">
+                📋 Ver historial
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

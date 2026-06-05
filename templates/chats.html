@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>💬 Chats</h1>
+</div>
+
+<!-- Buscador -->
+<div style="margin-bottom:16px;">
+    <input type="text" id="buscador-chat" placeholder="🔍 Buscar contacto..."
+           oninput="filtrarChats(this.value)"
+           style="width:100%;padding:12px 16px;border:1px solid var(--border);
+                  border-radius:24px;font-size:14px;background:var(--surface);
+                  color:var(--text);outline:none;">
+</div>
+
+<!-- Lista de chats -->
+<div id="lista-chats">
+    {% if contactos %}
+        {% for c in contactos %}
+
+        {% if tipo == 'contratista' %}
+        {% set nombre = c.trabajador.nombre + ' ' + (c.trabajador.apellido or '') %}
+        {% set foto = c.trabajador.foto_perfil %}
+        {% set link = '/chat/contratista/' + c.trabajador.id|string %}
+        {% set rol = c.trabajador.rol %}
+        {% set no_leidos = c.no_leidos %}
+        {% set ultimo = c.ultimo_mensaje %}
+        {% else %}
+        {% set nombre = c.contratista.usuario %}
+        {% set foto = c.contratista.foto_perfil %}
+        {% set link = '/chat/trabajador/' + c.contratista.id|string %}
+        {% set rol = 'Contratista' %}
+        {% set no_leidos = c.no_leidos %}
+        {% set ultimo = c.ultimo_mensaje %}
+        {% endif %}
+
+        <a href="{{ link }}" style="text-decoration:none;" class="chat-item">
+            <div style="display:flex;align-items:center;gap:12px;padding:14px;
+                        border-radius:12px;margin-bottom:6px;background:var(--surface);
+                        transition:background 0.15s;"
+                 onmouseover="this.style.background='var(--secondary-bg)'"
+                 onmouseout="this.style.background='var(--surface)'">
+
+                <!-- Foto -->
+                {% if foto %}
+                <img src="/static/fotos/{{ foto }}"
+                     style="width:50px;height:50px;border-radius:50%;object-fit:cover;
+                            border:2px solid var(--primary);flex-shrink:0;">
+                {% else %}
+                <div style="width:50px;height:50px;border-radius:50%;background:var(--primary);
+                            display:flex;align-items:center;justify-content:center;
+                            font-size:20px;flex-shrink:0;">
+                    {% if tipo == 'contratista' %}🧱{% else %}👷{% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Info -->
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <p style="font-weight:bold;color:var(--text);margin:0;
+                                  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                            {{ nombre.strip() }}
+                        </p>
+                        {% if ultimo %}
+                        <span style="font-size:11px;color:var(--text-muted);flex-shrink:0;margin-left:8px;">
+                            {{ ultimo.fecha.strftime('%H:%M') }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+                        <p style="font-size:13px;color:var(--text-muted);margin:0;
+                                  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                            {% if ultimo %}
+                                {{ ultimo.contenido[:40] }}{% if ultimo.contenido|length > 40 %}...{% endif %}
+                            {% else %}
+                                <em>Sin mensajes aún</em>
+                            {% endif %}
+                        </p>
+                        {% if no_leidos > 0 %}
+                        <span style="background:var(--primary);color:var(--primary-text);
+                                     border-radius:50%;width:20px;height:20px;
+                                     display:flex;align-items:center;justify-content:center;
+                                     font-size:11px;font-weight:bold;flex-shrink:0;margin-left:8px;">
+                            {{ no_leidos }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        {% endfor %}
+    {% else %}
+        <div class="vacio">
+            <p>No tienes contactos aún.</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function filtrarChats(q) {
+    const items = document.querySelectorAll('.chat-item');
+    items.forEach(item => {
+        const nombre = item.querySelector('p').textContent.toLowerCase();
+        item.style.display = nombre.includes(q.toLowerCase()) ? 'block' : 'none';
+    });
+}
+</script>
+
+{% endblock %}ss

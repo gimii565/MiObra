@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>Editar Trabajador</h1>
+    <a href="/obra/{{ trabajador.obra_id }}" class="btn-secondary">← Volver</a>
+</div>
+
+<div class="formulario">
+    <form method="POST">
+        <div class="campo">
+            <label>Nombre completo</label>
+            <input type="text" name="nombre" value="{{ trabajador.nombre }}" required autocomplete="off">
+        </div>
+        <div class="campo">
+            <label>Rol</label>
+            <select name="rol">
+                <option value="maestro" {% if trabajador.rol == 'maestro' %}selected{% endif %}>Maestro Albañil</option>
+                <option value="ayuco" {% if trabajador.rol == 'ayuco' %}selected{% endif %}>Ayuco</option>
+            </select>
+        </div>
+        <div class="campo">
+            <label>Sueldo por día (Bs.)</label>
+            <input type="number" name="jornal_dia" value="{{ trabajador.jornal_dia }}" step="0.01" required>
+        </div>
+        <button type="submit" class="btn-primary">Guardar Cambios</button>
+    </form>
+</div>
+
+{% endblock %}

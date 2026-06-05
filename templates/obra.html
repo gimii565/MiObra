@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>{{ obra.nombre }}</h1>
+    <a href="/contratista" class="btn-secondary">← Volver</a>
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+    <p>{{ obra.descripcion }}</p>
+    <p>Presupuesto total: <strong>Bs. {{ obra.presupuesto_total }}</strong></p>
+    <p>Total pagado: <strong>Bs. {{ total_pagado }}</strong></p>
+    <p>Total retiros: <strong>Bs. {{ total_retiros }}</strong></p>
+    <p>Saldo disponible: <strong style="color:var(--primary);">Bs. {{ saldo_disponible }}</strong></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+        <a href="/obra/{{ obra.id }}/fotos" class="btn-secondary">📸 Ver fotos</a>
+        <a href="/obra/{{ obra.id }}/archivados" class="btn-secondary">📦 Ver archivados</a>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:20px;border-left:4px solid #e65100;">
+    <h3 style="color:#e65100;margin-bottom:12px;">💰 Registrar Retiro</h3>
+    <form method="POST" action="/obra/{{ obra.id }}/retiro">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+            <div class="campo" style="flex:1;min-width:120px;">
+                <label>Monto (Bs.)</label>
+                <input type="number" name="monto" placeholder="0" step="0.01" required>
+            </div>
+            <div class="campo" style="flex:2;min-width:150px;">
+                <label>Nota</label>
+                <input type="text" name="nota" placeholder="Ej: Pago semana 1" autocomplete="off">
+            </div>
+            <button type="submit" class="btn-primary" style="margin-bottom:12px;background:#e65100;">
+                Registrar Retiro
+            </button>
+        </div>
+    </form>
+    {% if obra.retiros %}
+    <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+        <thead>
+            <tr style="background:var(--bg);">
+                <th style="padding:8px;text-align:left;">Fecha</th>
+                <th style="padding:8px;text-align:left;">Nota</th>
+                <th style="padding:8px;text-align:right;">Monto</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in obra.retiros|sort(attribute='fecha', reverse=True) %}
+            <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:8px;">{{ r.fecha.strftime('%d/%m/%Y') }}</td>
+                <td style="padding:8px;">{{ r.nota }}</td>
+                <td style="padding:8px;text-align:right;color:#e65100;font-weight:bold;">Bs. {{ r.monto }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+
+<div class="card" style="margin-bottom:20px;background:var(--secondary-bg);border-left:4px solid var(--primary);">
+    <h3 style="color:var(--secondary-text);margin-bottom:6px;">
+        📅 Semana: {{ lunes.strftime('%d/%m/%Y') }} — {{ sabado.strftime('%d/%m/%Y') }}
+    </h3>
+    <p style="font-size:18px;font-weight:bold;color:var(--primary);">
+        Total a pagar esta semana: Bs. {{ total_semana_actual }}
+    </p>
+</div>
+
+{% if notificaciones %}
+<div style="margin-bottom:20px;">
+    {% for n in notificaciones %}
+    {% set partes = n.tipo.split(':') %}
+    {% set tipo_notif = partes[0] %}
+    {% set deuda = partes[1] if partes|length > 1 else '0' %}
+    <div class="card" style="border-left:4px solid {% if tipo_notif == 'salida_con_deuda' %}#e65100{% else %}#28a745{% endif %};margin-bottom:12px;">
+        <p style="font-weight:bold;margin-bottom:8px;">
+            {% if tipo_notif == 'salida_con_deuda' %}
+            ⚠️ <strong>{{ n.trabajador.nombre }} {{ n.trabajador.apellido or '' }}</strong>
+            se está saliendo de esta obra. Se le debe <strong style="color:#e65100;">Bs. {{ deuda }}</strong>.
+            La obra quedará archivada hasta que se salde la deuda.
+            {% else %}
+            👋 <strong>{{ n.trabajador.nombre }} {{ n.trabajador.apellido or '' }}</strong>
+            se está saliendo de esta obra. No tiene deudas pendientes.
+            {% endif %}
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            {% if tipo_notif == 'salida_con_deuda' %}
+            <form method="POST" action="/notificacion/{{ n.id }}/accion">
+                <input type="hidden" name="accion" value="archivar">
+                <button type="submit"
+                    style="background:#fff3cd;color:#7a5500;border:none;
+                           padding:10px 16px;border-radius:24px;cursor:pointer;
+                           font-size:13px;font-weight:700;">
+                    📦 Aceptar y archivar
+                </button>
+            </form>
+            {% else %}
+            <form method="POST" action="/notificacion/{{ n.id }}/accion">
+                <input type="hidden" name="accion" value="archivar">
+                <button type="submit"
+                    style="background:#d4edda;color:#155724;border:none;
+                           padding:10px 16px;border-radius:24px;cursor:pointer;
+                           font-size:13px;font-weight:700;">
+                    ✅ Aceptar
+                </button>
+            </form>
+            <form method="POST" action="/notificacion/{{ n.id }}/accion">
+                <input type="hidden" name="accion" value="eliminar">
+                <button type="submit"
+                    style="background:#ffe0e0;color:#c00;border:none;
+                           padding:10px 16px;border-radius:24px;cursor:pointer;
+                           font-size:13px;font-weight:700;">
+                    🗑️ Eliminar de la obra
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if resumen_trabajadores %}
+    <div class="grid-obras">
+        {% for r in resumen_trabajadores %}
+        {% set t = r.trabajador %}
+        <div class="card">
+            <h2>{{ t.nombre }} {{ t.apellido or '' }}</h2>
+            <p>Rol: <strong>{{ t.rol }}</strong></p>
+            <p>Sueldo por día: <strong>Bs. {{ t.jornal_dia }}</strong></p>
+
+            <div style="margin-top:10px;padding:10px;background:var(--bg);border-radius:8px;">
+                <p style="font-size:13px;color:var(--text-muted);">Saldo semana actual:</p>
+                <p style="font-size:18px;font-weight:bold;color:var(--primary);">Bs. {{ r.saldo_semana }}</p>
+            </div>
+
+            {% if r.deuda_total > 0 %}
+            <div style="margin-top:8px;padding:10px;background:#fff3cd;border-radius:8px;">
+                <p style="font-size:13px;color:#7a5500;">⚠️ Deuda total acumulada:</p>
+                <p style="font-size:18px;font-weight:bold;color:#e65100;">Bs. {{ r.deuda_total }}</p>
+            </div>
+            {% else %}
+            <div style="margin-top:8px;padding:10px;background:#d4edda;border-radius:8px;">
+                <p style="font-size:13px;color:#155724;">✅ Al día — sin deudas</p>
+            </div>
+            {% endif %}
+
+            {% if r.semanas %}
+            <details style="margin-top:12px;">
+                <summary style="cursor:pointer;font-size:13px;color:var(--primary);
+                                font-weight:bold;padding:8px;background:var(--bg);
+                                border-radius:8px;list-style:none;">
+                    📋 Ver semanas anteriores ({{ r.semanas|length }})
+                </summary>
+                <div style="margin-top:8px;">
+                    {% for s in r.semanas %}
+                    {% set dias_semana = ['lunes','martes','miercoles','jueves','viernes','sabado'] %}
+                    <details style="margin-bottom:8px;border:1px solid var(--border);
+                                    border-radius:10px;overflow:hidden;">
+                        <summary style="padding:10px 12px;cursor:pointer;background:var(--bg);
+                                        display:flex;justify-content:space-between;
+                                        align-items:center;font-size:13px;list-style:none;">
+                            <span>
+                                📅 <strong>{{ s.fecha_inicio.strftime('%d/%m/%Y') }}</strong>
+                                al {{ (s.fecha_inicio + timedelta(days=5)).strftime('%d/%m/%Y') }}
+                            </span>
+                            <span style="color:var(--primary);font-weight:bold;">
+                                Bs. {{ calcular_saldo(s)|round(2) }}
+                            </span>
+                        </summary>
+                        <div style="padding:10px 12px;background:var(--surface);">
+                            {% set asist_dict = {} %}
+                            {% for a in s.asistencias %}
+                                {% if asist_dict.update({a.dia: a.tipo}) %}{% endif %}
+                            {% endfor %}
+                            <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px;">
+                                <thead>
+                                    <tr style="background:var(--bg);">
+                                        <th style="padding:6px 8px;text-align:left;">Día</th>
+                                        <th style="padding:6px 8px;text-align:center;">Asistencia</th>
+                                        <th style="padding:6px 8px;text-align:right;">Ganado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for dia in dias_semana %}
+                                    {% set tipo = asist_dict.get(dia, 'ninguno') %}
+                                    <tr style="border-bottom:1px solid var(--border);">
+                                        <td style="padding:6px 8px;text-transform:capitalize;font-weight:600;">{{ dia }}</td>
+                                        <td style="padding:6px 8px;text-align:center;">
+                                            {% if tipo == 'completo' %}<span style="color:#155724;background:#d4edda;padding:2px 8px;border-radius:12px;font-size:11px;">✅ Completo</span>
+                                            {% elif tipo == 'medio' %}<span style="color:#7a5500;background:#fff3cd;padding:2px 8px;border-radius:12px;font-size:11px;">☀️ Medio día</span>
+                                            {% elif tipo == 'noche' %}<span style="color:#004085;background:#cce5ff;padding:2px 8px;border-radius:12px;font-size:11px;">🌙 Noche</span>
+                                            {% elif tipo == 'medio_noche' %}<span style="color:#7a5500;background:#fff3cd;padding:2px 8px;border-radius:12px;font-size:11px;">☀️🌙 Medio+Noche</span>
+                                            {% elif tipo == 'completo_noche' %}<span style="color:#155724;background:#d4edda;padding:2px 8px;border-radius:12px;font-size:11px;">✅🌙 Comp+Noche</span>
+                                            {% else %}<span style="color:var(--text-muted);font-size:11px;">— No trabajó</span>
+                                            {% endif %}
+                                        </td>
+                                        <td style="padding:6px 8px;text-align:right;font-weight:600;color:var(--primary);">
+                                            {% if tipo == 'completo' %}Bs. {{ t.jornal_dia }}
+                                            {% elif tipo == 'medio' %}Bs. {{ (t.jornal_dia / 2)|round(2) }}
+                                            {% elif tipo == 'noche' %}Bs. {{ t.jornal_noche }}
+                                            {% elif tipo == 'medio_noche' %}Bs. {{ ((t.jornal_dia / 2) + t.jornal_noche)|round(2) }}
+                                            {% elif tipo == 'completo_noche' %}Bs. {{ (t.jornal_dia + t.jornal_noche)|round(2) }}
+                                            {% else %}—{% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if s.pagos %}
+                            <div style="border-top:1px solid var(--border);padding-top:8px;">
+                                <p style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">💰 Pagos:</p>
+                                {% for pago in s.pagos %}
+                                <div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;">
+                                    <span style="color:var(--text-muted);">{{ pago.fecha.strftime('%d/%m/%Y') }} — {{ pago.nota or 'Sin nota' }}</span>
+                                    <span style="color:#28a745;font-weight:700;">Bs. {{ pago.monto }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div style="margin-top:8px;padding:8px;background:var(--bg);border-radius:8px;display:flex;justify-content:space-between;">
+                                <span style="font-size:13px;font-weight:700;">Saldo semana:</span>
+                                <span style="font-size:14px;font-weight:800;color:var(--primary);">Bs. {{ calcular_saldo(s)|round(2) }}</span>
+                            </div>
+                        </div>
+                    </details>
+                    {% endfor %}
+                </div>
+            </details>
+            {% endif %}
+
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+                <a href="/trabajador/{{ t.id }}/semana?obra_id={{ obra.id }}" class="btn-primary">Ver semana</a>
+                <a href="/trabajador/{{ t.id }}/editar" class="btn-secondary">✏️ Editar</a>
+
+                {% if r.deuda_total > 0 %}
+                <form method="POST" action="/trabajador/{{ t.id }}/archivar"
+                      onsubmit="return confirm('{{ t.nombre }} tiene deuda de Bs. {{ r.deuda_total }}. ¿Archivar igualmente?')">
+                    <input type="hidden" name="obra_id" value="{{ obra.id }}">
+                    <button type="submit"
+                            style="background:#fff3cd;color:#7a5500;border:none;
+                                   padding:10px 14px;border-radius:24px;cursor:pointer;
+                                   font-size:13px;font-weight:700;margin-top:8px;">
+                        📦 Archivar
+                    </button>
+                </form>
+                {% else %}
+                <form method="POST" action="/trabajador/{{ t.id }}/eliminar"
+                      onsubmit="return confirm('¿Quitar a {{ t.nombre }} de esta obra?')">
+                    <input type="hidden" name="obra_id" value="{{ obra.id }}">
+                    <button type="submit"
+                            style="background:#ffe0e0;color:#c00;border:none;
+                                   padding:10px 14px;border-radius:24px;cursor:pointer;
+                                   font-size:13px;font-weight:700;margin-top:8px;">
+                        🗑️ Quitar
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="vacio">
+        <p>No hay trabajadores en esta obra.</p>
+        <a href="/obra/{{ obra.id }}/trabajador/nuevo" class="btn-primary">Agregar trabajador</a>
+    </div>
+{% endif %}
+
+{% endblock %}

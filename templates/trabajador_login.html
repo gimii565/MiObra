@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div class="formulario" style="width:100%;">
+
+        <div style="text-align:center;margin-bottom:24px;">
+            <img src="/static/icon_trabajador.png"
+                 style="width:70px;height:70px;object-fit:contain;margin-bottom:10px;">
+            <h1 style="font-size:22px;font-weight:800;">Iniciar sesión</h1>
+            <p style="color:var(--text-muted);font-size:14px;">Trabajador</p>
+        </div>
+
+        {% if error %}
+        <div style="background:#ffe0e0;border:1px solid #ff6b6b;border-radius:10px;
+                    padding:10px;margin-bottom:16px;color:#c00;font-size:14px;">
+            ❌ {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/trabajador/login">
+            <div class="campo">
+                <label>Usuario</label>
+                <input type="text" name="usuario" placeholder="Tu usuario" required autocomplete="off">
+            </div>
+            <div class="campo">
+                <label>Contraseña</label>
+                <input type="password" name="password" placeholder="Tu contraseña" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;margin-top:8px;">
+                Entrar
+            </button>
+        </form>
+
+        <p style="text-align:center;margin-top:16px;font-size:14px;color:var(--text-muted);">
+            ¿No tienes cuenta?
+            <a href="/trabajador/registro" style="color:var(--primary);font-weight:700;">
+                Registrarse
+            </a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>Nueva Obra</h1>
+    <a href="/" class="btn-secondary">← Volver</a>
+</div>
+
+<div class="formulario">
+    <form method="POST">
+        <div class="campo">
+            <label>Nombre de la obra</label>
+            <input type="text" name="nombre" placeholder="Ej: Casa Mamani" required>
+        </div>
+        <div class="campo">
+            <label>Descripción</label>
+            <input type="text" name="descripcion" placeholder="Ej: Construcción en zona norte">
+        </div>
+        <div class="campo">
+            <label>Presupuesto total (Bs.)</label>
+            <input type="number" name="presupuesto" placeholder="Ej: 50000" step="0.01">
+        </div>
+        <button type="submit" class="btn-primary">Guardar Obra</button>
+    </form>
+</div>
+
+{% endblock %}

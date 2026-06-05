@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div style="max-width:400px;margin:60px auto;">
+    <div class="card">
+        <h2 style="text-align:center;margin-bottom:24px;color:var(--primary);">👷 Acceso Contratista</h2>
+
+        {% if error %}
+        <div style="background:#ffe0e0;border:1px solid #ff6b6b;border-radius:8px;
+                    padding:10px;margin-bottom:16px;color:#c00;font-size:14px;">
+            ❌ {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/login">
+            <div class="campo">
+                <label>Usuario</label>
+                <input type="text" name="usuario" placeholder="Tu usuario" required autocomplete="off">
+            </div>
+            <div class="campo">
+                <label>Contraseña</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;margin-top:8px;">
+                Ingresar
+            </button>
+        </form>
+
+        <div style="text-align:center;margin-top:16px;">
+            <a href="/registro" style="font-size:14px;color:var(--primary);font-weight:bold;">
+                ¿No tienes cuenta? → Crear cuenta
+            </a>
+        </div>
+        <div style="text-align:center;margin-top:10px;">
+            <a href="/" style="font-size:13px;color:var(--text-muted);">← Volver al inicio</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
