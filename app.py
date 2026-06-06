@@ -363,7 +363,11 @@ def trabajador_inicio():
         deuda = sum(calcular_saldo(s) for s in semanas_obra)
         obras_archivadas.append({'to': to, 'deuda': round(deuda, 2)})
 
-    solicitudes = Solicitud.query.filter_by(trabajador_id=t.id, estado='pendiente').all()
+    from sqlalchemy.orm import joinedload
+    solicitudes = Solicitud.query.options(
+        joinedload(Solicitud.contratista),
+        joinedload(Solicitud.obra)
+    ).filter_by(trabajador_id=t.id, estado='pendiente').all()
     return render_template('trabajador_inicio.html',
         t=t, obras=obras, obras_archivadas=obras_archivadas, solicitudes=solicitudes
     )
