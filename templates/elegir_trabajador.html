@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+<div class="encabezado">
+    <h1>🧱 Soy Trabajador</h1>
+    <a href="/" class="btn-secondary">← Volver</a>
+</div>
+
+<div style="max-width:500px;margin:0 auto;">
+
+    <!-- Formulario para buscar contratista -->
+    <div class="card" style="margin-bottom:20px;">
+        <h3 style="margin-bottom:12px;color:var(--primary);">¿Con qué contratista trabajas?</h3>
+        <form method="POST" action="/trabajador/elegir">
+            <div class="campo">
+                <label>Nombre del contratista</label>
+                <input type="text" name="contratista" placeholder="Ej: juan123" required autocomplete="off">
+            </div>
+            {% if error %}
+            <div style="background:#ffe0e0;border:1px solid #ff6b6b;border-radius:8px;
+                        padding:10px;margin-bottom:12px;color:#c00;font-size:14px;">
+                ❌ {{ error }}
+            </div>
+            {% endif %}
+            <button type="submit" class="btn-primary">Buscar</button>
+        </form>
+    </div>
+
+    <!-- Si encontró el contratista mostrar sus trabajadores -->
+    {% if usuario %}
+        {% set obras_activas = usuario.obras | selectattr('activa') | list %}
+        {% if obras_activas %}
+            {% for obra in obras_activas %}
+                {% if obra.trabajadores %}
+                <div class="card" style="margin-bottom:16px;">
+                    <h3 style="color:var(--primary);margin-bottom:12px;">🏗️ {{ obra.nombre }}</h3>
+                    {% for t in obra.trabajadores if t.activo %}
+                    <a href="/mi-semana/{{ t.id }}" style="text-decoration:none;">
+                        <div style="padding:12px;border:1px solid var(--border);border-radius:8px;
+                                    margin-bottom:6px;cursor:pointer;background:var(--bg);"
+                            onmouseover="this.style.background='#fff8e1'"
+                            onmouseout="this.style.background=''">
+                            <strong style="color:var(--text);">{{ t.nombre }}</strong>
+                            <span style="color:var(--text-muted);font-size:13px;margin-left:8px;">
+                                {{ t.rol }}
+                            </span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="vacio">
+                <p>Este contratista no tiene obras activas.</p>
+            </div>
+        {% endif %}
+    {% endif %}
+
+</div>
+
+{% endblock %}

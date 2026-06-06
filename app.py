@@ -12,7 +12,7 @@ app.config.from_object(Config)
 app.secret_key = 'planilla_obras_2025'
 
 db = SQLAlchemy(app)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 UPLOAD_FOLDER = os.path.join('static', 'fotos')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
@@ -110,6 +110,9 @@ class Solicitud(db.Model):
     obra_id        = db.Column(db.Integer, db.ForeignKey('obras.id'))
     estado         = db.Column(db.String(20), default='pendiente')
     fecha          = db.Column(db.Date, default=date.today)
+    contratista = db.relationship('Usuario', backref='solicitudes')
+    trabajador  = db.relationship('Trabajador', backref='solicitudes')
+    obra        = db.relationship('Obra', backref='solicitudes')
 
 class TrabajadorObra(db.Model):
     __tablename__ = 'trabajador_obras'
@@ -134,9 +137,9 @@ class Notificacion(db.Model):
     tipo = db.Column(db.String(50))
     leida = db.Column(db.Boolean, default=False)
     fecha = db.Column(db.Date, default=date.today)
-    contratista = db.relationship('Usuario', foreign_keys=[contratista_id], backref=db.backref('solicitudes_enviadas', lazy=True))
-    trabajador  = db.relationship('Trabajador', foreign_keys=[trabajador_id], backref=db.backref('solicitudes_recibidas', lazy=True))
-    obra        = db.relationship('Obra', foreign_keys=[obra_id], backref=db.backref('solicitudes_obra', lazy=True))
+    contratista = db.relationship('Usuario', backref='notificaciones')
+    trabajador = db.relationship('Trabajador', backref='notificaciones')
+    obra = db.relationship('Obra', backref='notificaciones')
 
 class Mensaje(db.Model):
     __tablename__ = 'mensajes'
@@ -364,18 +367,8 @@ def trabajador_inicio():
         deuda = sum(calcular_saldo(s) for s in semanas_obra)
         obras_archivadas.append({'to': to, 'deuda': round(deuda, 2)})
 
-    from sqlalchemy.orm import joinedload
-    solicitudes_raw = Solicitud.query.filter_by(trabajador_id=t.id, estado='pendiente').all()
-    solicitudes = []
-    for s in solicitudes_raw:
-        contratista = Usuario.query.get(s.contratista_id)
-        obra = Obra.query.get(s.obra_id)
-        solicitudes.append({
-            'id': s.id,
-            'fecha': s.fecha,
-            'contratista': contratista,
-            'obra': obra
-        })
+    solicitudes = Solicitud.query.filter_by(trabajador_id=t.id, estado='pendiente').all()
+    print(f"DEBUG obras_archivadas: {len(obras_archivadas)} — {obras_archivadas}")
     return render_template('trabajador_inicio.html',
         t=t, obras=obras, obras_archivadas=obras_archivadas, solicitudes=solicitudes
     )
@@ -573,7 +566,12 @@ def ver_obra(obra_id):
         return redirect(url_for('contratista'))
 
     trabajador_obras = TrabajadorObra.query.filter_by(obra_id=obra_id, activo=True, estado='activa').all()
-    todos_ids    = [to.trabajador_id for to in trabajador_obras]
+    ids_intermedia   = [to.trabajador_id for to in trabajador_obras]
+
+    trabajadores_directos = Trabajador.query.filter_by(obra_id=obra_id, activo=True).all()
+    ids_directos = [t.id for t in trabajadores_directos]
+
+    todos_ids    = list(set(ids_intermedia + ids_directos))
     trabajadores = Trabajador.query.filter(
         Trabajador.id.in_(todos_ids),
         Trabajador.activo == True
@@ -643,6 +641,7 @@ def invitar_trabajador(obra_id):
     ).first()
     if not existe:
         solicitud = Solicitud(
+            contratista_id=session['usuario_id'],
             trabajador_id=trabajador_id,
             obra_id=obra_id,
             estado='pendiente'
@@ -1009,6 +1008,8 @@ def chats():
         for obra in usuario.obras:
             for to in TrabajadorObra.query.filter_by(obra_id=obra.id).all():
                 trabajador_ids_obras.append(to.trabajador_id)
+            for t in Trabajador.query.filter_by(obra_id=obra.id).all():
+                trabajador_ids_obras.append(t.id)
         todos_ids = list(set(trabajador_ids_obras))
         contactos = Trabajador.query.filter(Trabajador.id.in_(todos_ids)).all() if todos_ids else []
         contactos_info = []
@@ -1171,6 +1172,16 @@ def trabajador_perfil():
             session['trabajador_nombre'] = f"{t.nombre} {t.apellido or ''}".strip()
             exito = 'Perfil actualizado correctamente'
     return render_template('trabajador_perfil.html', t=t, error=error, exito=exito)
+
+@app.route('/trabajador/elegir', methods=['GET', 'POST'])
+def elegir_trabajador():
+    usuario = error = None
+    if request.method == 'POST':
+        nombre  = request.form['contratista'].strip()
+        usuario = Usuario.query.filter_by(usuario=nombre).first()
+        if not usuario:
+            error = 'No se encontró ese contratista'
+    return render_template('elegir_trabajador.html', usuario=usuario, error=error)
 
 @app.route('/obra/<int:obra_id>/eliminar', methods=['POST'])
 def eliminar_obra(obra_id):
