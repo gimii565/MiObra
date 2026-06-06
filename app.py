@@ -109,8 +109,8 @@ class Solicitud(db.Model):
     obra_id        = db.Column(db.Integer, db.ForeignKey('obras.id'))
     estado         = db.Column(db.String(20), default='pendiente')
     fecha          = db.Column(db.Date, default=date.today)
-    trabajador  = db.relationship('Trabajador', backref='solicitudes')
-    obra        = db.relationship('Obra', backref='solicitudes')
+    trabajador  = db.relationship('Trabajador', foreign_keys=[trabajador_id], backref='solicitudes')
+    obra        = db.relationship('Obra', foreign_keys=[obra_id], backref='solicitudes')
 
 class TrabajadorObra(db.Model):
     __tablename__ = 'trabajador_obras'
@@ -135,9 +135,9 @@ class Notificacion(db.Model):
     tipo = db.Column(db.String(50))
     leida = db.Column(db.Boolean, default=False)
     fecha = db.Column(db.Date, default=date.today)
-    contratista = db.relationship('Usuario', backref='notificaciones')
-    trabajador = db.relationship('Trabajador', backref='notificaciones')
-    obra = db.relationship('Obra', backref='notificaciones')
+    contratista = db.relationship('Usuario', foreign_keys=[contratista_id], backref=db.backref('solicitudes_enviadas', lazy=True))
+    trabajador  = db.relationship('Trabajador', foreign_keys=[trabajador_id], backref=db.backref('solicitudes_recibidas', lazy=True))
+    obra        = db.relationship('Obra', foreign_keys=[obra_id], backref=db.backref('solicitudes_obra', lazy=True))
 
 class Mensaje(db.Model):
     __tablename__ = 'mensajes'
