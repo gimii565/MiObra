@@ -5,4 +5,5 @@ werkzeug
 gunicorn
 psycopg2-binary
 python-dotenv
+gunicorn
 eventlet
