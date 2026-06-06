@@ -12,7 +12,7 @@ app.config.from_object(Config)
 app.secret_key = 'planilla_obras_2025'
 
 db = SQLAlchemy(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 UPLOAD_FOLDER = os.path.join('static', 'fotos')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
