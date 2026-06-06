@@ -109,8 +109,6 @@ class Solicitud(db.Model):
     obra_id        = db.Column(db.Integer, db.ForeignKey('obras.id'))
     estado         = db.Column(db.String(20), default='pendiente')
     fecha          = db.Column(db.Date, default=date.today)
-    trabajador  = db.relationship('Trabajador', foreign_keys=[trabajador_id], backref='solicitudes')
-    obra        = db.relationship('Obra', foreign_keys=[obra_id], backref='solicitudes')
 
 class TrabajadorObra(db.Model):
     __tablename__ = 'trabajador_obras'
