@@ -105,6 +105,7 @@ class Foto(db.Model):
 class Solicitud(db.Model):
     __tablename__ = 'solicitudes'
     id = db.Column(db.Integer, primary_key=True)
+    contratista_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
     trabajador_id  = db.Column(db.Integer, db.ForeignKey('trabajadores.id'))
     obra_id        = db.Column(db.Integer, db.ForeignKey('obras.id'))
     estado         = db.Column(db.String(20), default='pendiente')
@@ -364,10 +365,17 @@ def trabajador_inicio():
         obras_archivadas.append({'to': to, 'deuda': round(deuda, 2)})
 
     from sqlalchemy.orm import joinedload
-    solicitudes = Solicitud.query.options(
-        joinedload(Solicitud.contratista),
-        joinedload(Solicitud.obra)
-    ).filter_by(trabajador_id=t.id, estado='pendiente').all()
+    solicitudes_raw = Solicitud.query.filter_by(trabajador_id=t.id, estado='pendiente').all()
+    solicitudes = []
+    for s in solicitudes_raw:
+        contratista = Usuario.query.get(s.contratista_id)
+        obra = Obra.query.get(s.obra_id)
+        solicitudes.append({
+            'id': s.id,
+            'fecha': s.fecha,
+            'contratista': contratista,
+            'obra': obra
+        })
     return render_template('trabajador_inicio.html',
         t=t, obras=obras, obras_archivadas=obras_archivadas, solicitudes=solicitudes
     )
@@ -1236,3 +1244,5 @@ def desarchivar_trabajador(trab_id):
 # ─────────────────────────────────────────
 with app.app_context():
     db.create_all()
+    db.engine.connect()
+    print("Conexion exitosa a PostgreSQL")
