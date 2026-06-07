@@ -121,6 +121,11 @@
 </div>
 {% endif %}
 
+<div class="encabezado" style="margin-bottom:15px;">
+    <h2>Trabajadores</h2>
+    <a href="/obra/{{ obra.id }}/trabajador/nuevo" class="btn-primary">+ Agregar</a>
+</div>
+
 {% if resumen_trabajadores %}
     <div class="grid-obras">
         {% for r in resumen_trabajadores %}
