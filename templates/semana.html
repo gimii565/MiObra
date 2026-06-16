@@ -5,7 +5,7 @@
 <div class="encabezado">
     <h1>{{ trabajador.nombre }}</h1>
     <a href="/obra/{{ semana.obra_id or trabajador.obra_id }}" class="btn-secondary">← Volver</a>
-<a href="/trabajador/{{ trabajador.id }}/semana/reporte" class="btn-secondary" target="_blank" style="background:#1a56db;color:#fff;border-color:#1a56db;">🖨️ Imprimir reporte</a>
+<a href="/trabajador/{{ trabajador.id }}/semana/reporte?obra_id={{ semana.obra_id or trabajador.obra_id }}" class="btn-secondary" target="_blank" style="background:#1a56db;color:#fff;border-color:#1a56db;">🖨️ Imprimir reporte</a>
 </div>
 
 <div class="card" style="margin-bottom: 20px;">
