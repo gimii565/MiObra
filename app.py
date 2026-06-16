@@ -729,6 +729,59 @@ def ver_semana(trabajador_id):
         saldo_semana=calcular_saldo(semana)
     )
 
+@app.route('/trabajador/<int:trabajador_id>/semana/reporte')
+def reporte_semana(trabajador_id):
+    redir = login_requerido()
+    if redir: return redir
+
+    trabajador = Trabajador.query.get_or_404(trabajador_id)
+    obra_id = request.args.get('obra_id', type=int) or trabajador.obra_id
+    obra = Obra.query.get_or_404(obra_id)
+    contratista = Usuario.query.get_or_404(obra.usuario_id)
+
+    hoy   = date.today()
+    lunes = hoy - timedelta(days=hoy.weekday())
+
+    semana = Semana.query.filter_by(
+        trabajador_id=trabajador_id,
+        obra_id=obra_id,
+        fecha_inicio=lunes
+    ).first()
+
+    if not semana:
+        return redirect(url_for('ver_semana', trabajador_id=trabajador_id))
+
+    asistencias = {a.dia: a for a in semana.asistencias}
+    saldo_semana = calcular_saldo(semana)
+
+    t = trabajador
+    total_jornales = semana.saldo_anterior
+    for a in semana.asistencias:
+        if a.tipo == 'completo':
+            total_jornales += t.jornal_dia
+        elif a.tipo == 'medio':
+            total_jornales += t.jornal_dia / 2
+        elif a.tipo == 'noche':
+            total_jornales += t.jornal_noche
+        elif a.tipo == 'medio_noche':
+            total_jornales += (t.jornal_dia / 2) + t.jornal_noche
+        elif a.tipo == 'completo_noche':
+            total_jornales += t.jornal_dia + t.jornal_noche
+
+    total_pagos = sum(p.monto for p in semana.pagos)
+
+    return render_template('reporte_semana.html',
+        trabajador=trabajador,
+        obra=obra,
+        contratista=contratista,
+        semana=semana,
+        asistencias=asistencias,
+        saldo_semana=round(saldo_semana, 2),
+        total_jornales=round(total_jornales, 2),
+        total_pagos=round(total_pagos, 2),
+        fecha_hoy=hoy.strftime('%d/%m/%Y')
+    )
+
 @app.route('/mi-semana/<int:trabajador_id>')
 def mi_semana(trabajador_id):
     if not session.get('trabajador_id') and not session.get('usuario_id'):
