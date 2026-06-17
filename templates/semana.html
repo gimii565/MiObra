@@ -31,29 +31,6 @@
     {% endif %}
 </div>
 
-<div class="card" style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;">
-    {% if puede_retroceder %}
-    <a href="/trabajador/{{ trabajador.id }}/semana?obra_id={{ semana.obra_id or trabajador.obra_id }}&semana_offset={{ semana_offset - 1 }}" class="btn-secondary" style="padding:8px 14px;">‹</a>
-    {% else %}
-    <span class="btn-secondary" style="padding:8px 14px;opacity:0.3;cursor:not-allowed;">‹</span>
-    {% endif %}
-
-    <div style="text-align:center;">
-        <p style="font-size:14px;font-weight:700;">{{ semana.fecha_inicio.strftime('%d/%m/%Y') }} — {{ sabado.strftime('%d/%m/%Y') }}</p>
-        {% if es_semana_actual %}
-        <span style="display:inline-block;margin-top:4px;background:var(--primary);color:#1a1a1a;font-size:11px;font-weight:800;padding:2px 10px;border-radius:10px;">ACTUAL</span>
-        {% else %}
-        <span style="display:inline-block;margin-top:4px;background:var(--bg);color:var(--text-muted);font-size:11px;font-weight:700;padding:2px 10px;border-radius:10px;">SOLO LECTURA</span>
-        {% endif %}
-    </div>
-
-    {% if puede_avanzar %}
-    <a href="/trabajador/{{ trabajador.id }}/semana?obra_id={{ semana.obra_id or trabajador.obra_id }}&semana_offset={{ semana_offset + 1 }}" class="btn-secondary" style="padding:8px 14px;">›</a>
-    {% else %}
-    <span class="btn-secondary" style="padding:8px 14px;opacity:0.3;cursor:not-allowed;">›</span>
-    {% endif %}
-</div>
-
 <div class="card" style="margin-bottom: 20px;">
     <p>Rol: <strong>{{ trabajador.rol }}</strong></p>
     <p>Jornal día: <strong>Bs. {{ trabajador.jornal_dia }}</strong></p>
@@ -189,14 +166,19 @@ const fechaInicio = new Date("{{ semana.fecha_inicio }}T00:00:00");
 const hoy = new Date();
 hoy.setHours(23, 59, 59, 0);
 
+const soloLectura = document.querySelector('[data-solo-lectura]').dataset.soloLectura === 'true';
+
 diasSemana.forEach((dia, idx) => {
     const fechaDia = new Date(fechaInicio);
     fechaDia.setDate(fechaInicio.getDate() + idx);
     fechaDia.setHours(0, 0, 0, 0);
-    if (fechaDia > hoy) {
+    if (fechaDia > hoy || soloLectura) {
         ['medio','completo','noche'].forEach(tipo => {
             const btn = document.getElementById(`btn-${dia}-${tipo}`);
-            if (btn) { btn.disabled = true; btn.title = 'Aún no es este día'; }
+            if (btn) {
+                btn.disabled = true;
+                btn.title = soloLectura ? 'Semana pasada — solo lectura' : 'Aún no es este día';
+            }
         });
     }
 });
