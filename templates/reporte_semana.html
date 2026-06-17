@@ -9,101 +9,93 @@
 
         body {
             font-family: Arial, sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             color: #1a1a1a;
             background: #f4f7fb;
-            padding: 20px;
+            padding: 16px;
         }
 
-        /* ── BOTONES FLOTANTES ── */
+        /* BOTONES - solo visibles en pantalla */
         .acciones {
-            position: fixed;
-            top: 16px;
-            right: 16px;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 999;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
         }
-        .btn-accion {
-            display: block;
-            padding: 11px 18px;
-            border-radius: 10px;
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             border: none;
             cursor: pointer;
-            text-align: center;
             text-decoration: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            display: inline-block;
         }
         .btn-guardar  { background: #1a56db; color: #fff; }
         .btn-imprimir { background: #fff; color: #1a56db; border: 2px solid #1a56db; }
         .btn-volver   { background: #f1f5f9; color: #374151; border: 1.5px solid #d1d5db; }
 
-        /* ── CONTENIDO ── */
-        .contenido {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        /* ── ENCABEZADO ── */
-        .header {
+        /* CONTENIDO */
+        .pagina {
             background: #fff;
             border-radius: 12px;
-            padding: 20px 24px;
-            margin-bottom: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+
+        /* ENCABEZADO */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 4px solid #1a56db;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            border-bottom: 3px solid #1a56db;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
         }
-        .header h1 { font-size: 20px; color: #1a56db; font-weight: 700; margin-bottom: 4px; }
-        .header p  { font-size: 12px; color: #888; }
-        .logo      { font-size: 22px; font-weight: 800; color: #1a56db; white-space: nowrap; }
+        .header h1 { font-size: 18px; color: #1a56db; font-weight: 700; margin-bottom: 3px; }
+        .header p  { font-size: 11px; color: #888; }
+        .logo      { font-size: 20px; font-weight: 800; color: #1a56db; }
         .logo span { color: #f59e0b; }
 
-        /* ── CARD ── */
-        .card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+        /* DATOS */
+        .datos-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 24px;
+            background: #f0f5ff;
+            border: 1px solid #c7d9f8;
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
         }
-        .card-title {
-            font-size: 13px;
+        .dato { display: flex; flex-direction: column; gap: 1px; }
+        .dato label { font-size: 10px; color: #888; font-weight: 600; text-transform: uppercase; }
+        .dato span  { font-size: 13px; color: #111; font-weight: 500; }
+
+        /* SECCION */
+        .seccion-title {
+            font-size: 12px;
             font-weight: 700;
             color: #1a56db;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 14px;
-            padding-bottom: 8px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
             border-bottom: 1.5px solid #e8eef8;
         }
 
-        /* ── DATOS GRID ── */
-        .datos-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px 24px;
-        }
-        .dato { display: flex; flex-direction: column; gap: 2px; }
-        .dato label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
-        .dato span  { font-size: 14px; color: #111; font-weight: 500; }
-
-        /* ── TABLA ── */
-        table { width: 100%; border-collapse: collapse; }
+        /* TABLA ASISTENCIA */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
         thead tr { background: #1a56db; }
-        thead th { padding: 10px 14px; text-align: left; font-size: 12px; color: #fff; font-weight: 600; }
+        thead th { padding: 8px 10px; text-align: left; font-size: 11px; color: #fff; font-weight: 600; }
         thead th:last-child { text-align: right; }
         tbody tr { border-bottom: 1px solid #f0f4fa; }
         tbody tr:last-child { border-bottom: none; }
-        tbody td { padding: 10px 14px; font-size: 14px; }
+        tbody td { padding: 7px 10px; font-size: 13px; }
         tbody td:last-child { text-align: right; }
 
-        .tipo-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .tipo-completo       { background: #d1fae5; color: #065f46; }
         .tipo-medio          { background: #fef3c7; color: #92400e; }
         .tipo-noche          { background: #e0e7ff; color: #3730a3; }
@@ -111,56 +103,48 @@
         .tipo-completo_noche { background: #d1fae5; color: #065f46; border: 1px solid #6366f1; }
         .tipo-ninguno        { background: #f1f5f9; color: #94a3b8; }
 
-        /* ── RESUMEN GRID ── */
-        .resumen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        /* RESUMEN */
+        .dos-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .box { border: 1px solid #e8eef8; border-radius: 8px; padding: 12px 14px; }
 
-        .resumen-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #f0f4fa; font-size: 14px; }
-        .resumen-row:last-child { border-bottom: none; }
-        .resumen-row .lbl { color: #555; }
-        .resumen-row .val { font-weight: 700; }
-        .text-blue  { color: #1a56db; }
-        .text-red   { color: #dc2626; }
-        .text-green { color: #059669; }
-        .text-gray  { color: #94a3b8; font-weight: 400 !important; font-style: italic; }
+        .fila { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f0f4fa; font-size: 13px; }
+        .fila:last-child { border-bottom: none; }
+        .fila .lbl { color: #555; }
+        .fila .val { font-weight: 700; }
+        .azul  { color: #1a56db; }
+        .rojo  { color: #dc2626; }
+        .gris  { color: #94a3b8; font-style: italic; font-weight: 400 !important; }
 
-        /* ── SALDO FINAL ── */
+        /* SALDO */
         .saldo-final {
-            background: linear-gradient(135deg, #1a56db, #2563eb);
+            background: #1a56db;
             color: #fff;
-            border-radius: 12px;
-            padding: 18px 24px;
+            border-radius: 8px;
+            padding: 14px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(26,86,219,0.3);
         }
-        .saldo-final .lbl  { font-size: 14px; opacity: 0.9; }
-        .saldo-final .monto { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; }
+        .saldo-final .lbl   { font-size: 13px; opacity: 0.9; }
+        .saldo-final .monto { font-size: 26px; font-weight: 800; }
 
-        /* ── FIRMAS ── */
-        .firmas { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        .firma { text-align: center; }
-        .firma-linea { border-top: 1.5px solid #aaa; padding-top: 8px; margin-top: 50px; font-size: 12px; color: #555; line-height: 1.6; }
+        /* FIRMAS */
+        .firmas { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 14px; }
+        .firma  { text-align: center; }
+        .firma-linea { border-top: 1.5px solid #aaa; padding-top: 6px; margin-top: 44px; font-size: 11px; color: #555; line-height: 1.6; }
 
-        /* ── PIE ── */
-        .footer {
-            margin-top: 16px;
-            padding-top: 12px;
-            border-top: 1px solid #e2e8f0;
-            font-size: 11px;
-            color: #aaa;
-            display: flex;
-            justify-content: space-between;
-        }
+        /* PIE */
+        .footer { font-size: 10px; color: #bbb; display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px solid #e8eef8; }
 
-        /* ── PRINT ── */
+        /* PRINT */
         @media print {
             .acciones { display: none !important; }
-            body { background: #fff; padding: 0; }
-            .card { box-shadow: none; border: 1px solid #e2e8f0; }
-            .header { box-shadow: none; }
-            @page { margin: 1.5cm; }
+            body { background: #fff; padding: 0; font-size: 12px; }
+            .pagina { box-shadow: none; border-radius: 0; padding: 16px; }
+            .saldo-final { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            thead tr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @page { margin: 0.8cm; size: A4 portrait; }
         }
     </style>
 </head>
@@ -168,12 +152,12 @@
 
 <!-- BOTONES -->
 <div class="acciones">
-    <button class="btn-accion btn-guardar" onclick="guardarPDF()">💾 Guardar PDF</button>
-    <button class="btn-accion btn-imprimir" onclick="window.print()">🖨️ Imprimir</button>
-    <a class="btn-accion btn-volver" href="/trabajador/{{ trabajador.id }}/semana?obra_id={{ obra.id }}">← Volver</a>
+    <a class="btn btn-volver" href="/trabajador/{{ trabajador.id }}/semana?obra_id={{ obra.id }}">← Volver</a>
+    <button class="btn btn-guardar" id="btn-guardar">💾 Guardar PDF</button>
+    <button class="btn btn-imprimir" onclick="window.print()">🖨️ Imprimir</button>
 </div>
 
-<div class="contenido">
+<div class="pagina">
 
     <!-- ENCABEZADO -->
     <div class="header">
@@ -184,98 +168,69 @@
         <div class="logo">Planilla<span>Obras</span></div>
     </div>
 
-    <!-- DATOS GENERALES -->
-    <div class="card">
-        <div class="card-title">Datos del trabajador</div>
-        <div class="datos-grid">
-            <div class="dato"><label>Trabajador</label><span>{{ trabajador.nombre }} {{ trabajador.apellido }}</span></div>
-            <div class="dato"><label>Obra</label><span>{{ obra.nombre }}</span></div>
-            <div class="dato"><label>Rol</label><span>{{ trabajador.rol | capitalize }}</span></div>
-            <div class="dato"><label>Semana del</label><span>{{ semana.fecha_inicio }}</span></div>
-            <div class="dato"><label>Jornal día</label><span>Bs. {{ trabajador.jornal_dia }}</span></div>
-            <div class="dato"><label>Jornal noche</label><span>Bs. {{ trabajador.jornal_noche }}</span></div>
-            <div class="dato"><label>Saldo anterior</label><span>Bs. {{ "%.2f"|format(semana.saldo_anterior) }}</span></div>
-            <div class="dato"><label>Contratista</label><span>{{ contratista.nombre_completo }}</span></div>
-        </div>
+    <!-- DATOS -->
+    <div class="datos-grid">
+        <div class="dato"><label>Trabajador</label><span>{{ trabajador.nombre }} {{ trabajador.apellido }}</span></div>
+        <div class="dato"><label>Obra</label><span>{{ obra.nombre }}</span></div>
+        <div class="dato"><label>Rol</label><span>{{ trabajador.rol | capitalize }}</span></div>
+        <div class="dato"><label>Semana del</label><span>{{ semana.fecha_inicio }}</span></div>
+        <div class="dato"><label>Jornal día</label><span>Bs. {{ trabajador.jornal_dia }}</span></div>
+        <div class="dato"><label>Jornal noche</label><span>Bs. {{ trabajador.jornal_noche }}</span></div>
+        <div class="dato"><label>Saldo anterior</label><span>Bs. {{ "%.2f"|format(semana.saldo_anterior) }}</span></div>
+        <div class="dato"><label>Contratista</label><span>{{ contratista.nombre_completo }}</span></div>
     </div>
 
     <!-- ASISTENCIA -->
-    <div class="card">
-        <div class="card-title">Registro de asistencia</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Día</th>
-                    <th>Tipo de asistencia</th>
-                    <th>Jornal ganado (Bs.)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% set dias_semana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'] %}
-                {% for dia in dias_semana %}
-                {% set asist = asistencias.get(dia) %}
-                {% set tipo = asist.tipo if asist else 'ninguno' %}
-                {% if tipo == 'completo' %}
-                    {% set ganado = trabajador.jornal_dia %}
-                    {% set label_tipo = 'Día completo' %}
-                {% elif tipo == 'medio' %}
-                    {% set ganado = trabajador.jornal_dia / 2 %}
-                    {% set label_tipo = 'Medio día' %}
-                {% elif tipo == 'noche' %}
-                    {% set ganado = trabajador.jornal_noche %}
-                    {% set label_tipo = 'Solo noche' %}
-                {% elif tipo == 'medio_noche' %}
-                    {% set ganado = (trabajador.jornal_dia / 2) + trabajador.jornal_noche %}
-                    {% set label_tipo = 'Medio día + noche' %}
-                {% elif tipo == 'completo_noche' %}
-                    {% set ganado = trabajador.jornal_dia + trabajador.jornal_noche %}
-                    {% set label_tipo = 'Día completo + noche' %}
-                {% else %}
-                    {% set ganado = 0 %}
-                    {% set label_tipo = 'No asistió' %}
-                {% endif %}
-                <tr>
-                    <td style="text-transform:capitalize; font-weight:600;">{{ dia }}</td>
-                    <td><span class="tipo-badge tipo-{{ tipo }}">{{ label_tipo }}</span></td>
-                    <td style="font-weight:{% if ganado > 0 %}700{% else %}400{% endif %}; color:{% if ganado > 0 %}#059669{% else %}#94a3b8{% endif %};">
-                        {% if ganado > 0 %}Bs. {{ "%.2f"|format(ganado) }}{% else %}—{% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <div class="seccion-title">Registro de asistencia</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Día</th>
+                <th>Tipo</th>
+                <th>Jornal (Bs.)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set dias_semana = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'] %}
+            {% for dia in dias_semana %}
+            {% set asist = asistencias.get(dia) %}
+            {% set tipo = asist.tipo if asist else 'ninguno' %}
+            {% if tipo == 'completo' %}{% set ganado = trabajador.jornal_dia %}{% set lt = 'Día completo' %}
+            {% elif tipo == 'medio' %}{% set ganado = trabajador.jornal_dia / 2 %}{% set lt = 'Medio día' %}
+            {% elif tipo == 'noche' %}{% set ganado = trabajador.jornal_noche %}{% set lt = 'Solo noche' %}
+            {% elif tipo == 'medio_noche' %}{% set ganado = (trabajador.jornal_dia / 2) + trabajador.jornal_noche %}{% set lt = 'Medio + noche' %}
+            {% elif tipo == 'completo_noche' %}{% set ganado = trabajador.jornal_dia + trabajador.jornal_noche %}{% set lt = 'Completo + noche' %}
+            {% else %}{% set ganado = 0 %}{% set lt = 'No asistió' %}{% endif %}
+            <tr>
+                <td style="text-transform:capitalize;font-weight:600;">{{ dia }}</td>
+                <td><span class="badge tipo-{{ tipo }}">{{ lt }}</span></td>
+                <td style="font-weight:{% if ganado > 0 %}700{% else %}400{% endif %};color:{% if ganado > 0 %}#059669{% else %}#94a3b8{% endif %};">
+                    {% if ganado > 0 %}Bs. {{ "%.2f"|format(ganado) }}{% else %}—{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
     <!-- RESUMEN + PAGOS -->
-    <div class="resumen-grid">
-        <div class="card">
-            <div class="card-title">Resumen de jornales</div>
-            <div class="resumen-row">
-                <span class="lbl">Saldo semana anterior</span>
-                <span class="val">Bs. {{ "%.2f"|format(semana.saldo_anterior) }}</span>
-            </div>
-            <div class="resumen-row">
-                <span class="lbl">Total jornales esta semana</span>
-                <span class="val text-blue">Bs. {{ "%.2f"|format(total_jornales) }}</span>
-            </div>
-            <div class="resumen-row">
-                <span class="lbl">Total pagos recibidos</span>
-                <span class="val text-red">- Bs. {{ "%.2f"|format(total_pagos) }}</span>
-            </div>
+    <div class="dos-col">
+        <div class="box">
+            <div class="seccion-title">Resumen de jornales</div>
+            <div class="fila"><span class="lbl">Saldo anterior</span><span class="val">Bs. {{ "%.2f"|format(semana.saldo_anterior) }}</span></div>
+            <div class="fila"><span class="lbl">Jornales esta semana</span><span class="val azul">Bs. {{ "%.2f"|format(total_jornales) }}</span></div>
+            <div class="fila"><span class="lbl">Pagos recibidos</span><span class="val rojo">- Bs. {{ "%.2f"|format(total_pagos) }}</span></div>
         </div>
-        <div class="card">
-            <div class="card-title">Pagos y adelantos</div>
+        <div class="box">
+            <div class="seccion-title">Pagos y adelantos</div>
             {% if semana.pagos %}
                 {% for pago in semana.pagos %}
-                <div class="resumen-row">
+                <div class="fila">
                     <span class="lbl">{{ pago.fecha.strftime('%d/%m') }} &mdash; {{ pago.nota or 'Pago' }}</span>
-                    <span class="val text-red">Bs. {{ "%.2f"|format(pago.monto) }}</span>
+                    <span class="val rojo">Bs. {{ "%.2f"|format(pago.monto) }}</span>
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="resumen-row">
-                    <span class="val text-gray">Sin pagos registrados</span>
-                </div>
+                <div class="fila"><span class="val gris">Sin pagos registrados</span></div>
             {% endif %}
         </div>
     </div>
@@ -287,40 +242,33 @@
     </div>
 
     <!-- FIRMAS -->
-    <div class="card">
-        <div class="card-title">Firmas de conformidad</div>
-        <div class="firmas">
-            <div class="firma">
-                <div class="firma-linea">
-                    Firma del Trabajador<br>
-                    <strong>{{ trabajador.nombre }} {{ trabajador.apellido }}</strong>
-                </div>
-            </div>
-            <div class="firma">
-                <div class="firma-linea">
-                    Firma del Contratista<br>
-                    <strong>{{ contratista.nombre_completo }}</strong>
-                </div>
-            </div>
+    <div class="firmas">
+        <div class="firma">
+            <div class="firma-linea">Firma del Trabajador<br><strong>{{ trabajador.nombre }} {{ trabajador.apellido }}</strong></div>
+        </div>
+        <div class="firma">
+            <div class="firma-linea">Firma del Contratista<br><strong>{{ contratista.nombre_completo }}</strong></div>
         </div>
     </div>
 
     <!-- PIE -->
     <div class="footer">
         <span>Planilla Obras &mdash; Sistema Digital de Control de Jornales</span>
-        <span>Generado el {{ fecha_hoy }}</span>
+        <span>Semana del {{ semana.fecha_inicio }} &mdash; {{ fecha_hoy }}</span>
     </div>
 
 </div>
 
 <script>
-function guardarPDF() {
-    // Oculta botones, imprime como PDF, los vuelve a mostrar
+// Guardar como PDF: oculta botones, dispara impresion (guardar como PDF), los vuelve
+document.getElementById('btn-guardar').addEventListener('click', function() {
     const acciones = document.querySelector('.acciones');
     acciones.style.display = 'none';
-    window.print();
-    acciones.style.display = 'flex';
-}
+    setTimeout(function() {
+        window.print();
+        acciones.style.display = 'flex';
+    }, 200);
+});
 </script>
 
 </body>
