@@ -9,11 +9,36 @@
 
 <div class="card" style="margin-bottom:20px;">
     <p>{{ obra.descripcion }}</p>
-    <p>Presupuesto total: <strong>Bs. {{ obra.presupuesto_total }}</strong></p>
-    <p>Total pagado: <strong>Bs. {{ total_pagado }}</strong></p>
-    <p>Total retiros: <strong>Bs. {{ total_retiros }}</strong></p>
-    <p>Saldo disponible: <strong style="color:var(--primary);">Bs. {{ saldo_disponible }}</strong></p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+        <h3 style="font-size:15px;margin-bottom:2px;">💰 Presupuesto de la obra</h3>
+        <p style="font-size:12px;margin-bottom:14px;">Control de gastos vs presupuesto</p>
+
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+            <span>Retirado: <strong>Bs. {{ total_retiros }}</strong></span>
+            <span>{{ porcentaje_gastado }}% del presupuesto</span>
+        </div>
+        <div style="background:var(--border);border-radius:8px;height:10px;overflow:hidden;margin-bottom:14px;">
+            <div style="background:var(--primary);height:100%;width:{{ porcentaje_gastado if porcentaje_gastado <= 100 else 100 }}%;"></div>
+        </div>
+
+        <div style="display:flex;gap:8px;text-align:center;">
+            <div style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 6px;">
+                <p style="font-size:11px;text-transform:uppercase;margin-bottom:4px;">Presupuesto</p>
+                <strong>Bs. {{ obra.presupuesto_total }}</strong>
+            </div>
+            <div style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 6px;">
+                <p style="font-size:11px;text-transform:uppercase;margin-bottom:4px;">Retirado</p>
+                <strong>Bs. {{ total_retiros }}</strong>
+            </div>
+            <div style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 6px;">
+                <p style="font-size:11px;text-transform:uppercase;margin-bottom:4px;">Disponible</p>
+                <strong style="color:var(--primary);">Bs. {{ saldo_disponible }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
         <a href="/obra/{{ obra.id }}/fotos" class="btn-secondary">📸 Ver fotos</a>
         <a href="/obra/{{ obra.id }}/archivados" class="btn-secondary">📦 Ver archivados</a>
     </div>

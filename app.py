@@ -582,13 +582,9 @@ def ver_obra(obra_id):
     lunes  = hoy - timedelta(days=hoy.weekday())
     sabado = lunes + timedelta(days=5)
 
-    total_pagado = sum(
-        sum(p.monto for p in s.pagos)
-        for t in trabajadores for s in t.semanas
-        if s.obra_id == obra_id
-    )
     total_retiros    = sum(r.monto for r in obra.retiros)
-    saldo_disponible = obra.presupuesto_total - total_pagado - total_retiros
+    saldo_disponible = obra.presupuesto_total - total_retiros
+    porcentaje_gastado = round((total_retiros / obra.presupuesto_total * 100), 1) if obra.presupuesto_total else 0
 
     resumen_trabajadores = []
     total_semana_actual  = 0
@@ -613,9 +609,9 @@ def ver_obra(obra_id):
     return render_template('obra.html',
         obra=obra,
         resumen_trabajadores=resumen_trabajadores,
-        total_pagado=total_pagado,
         total_retiros=total_retiros,
         saldo_disponible=saldo_disponible,
+        porcentaje_gastado=porcentaje_gastado,
         total_semana_actual=round(total_semana_actual, 2),
         lunes=lunes,
         sabado=sabado,
