@@ -602,8 +602,8 @@ def ver_obra(obra_id):
     resumen_trabajadores = []
     total_semana_actual  = 0
     total_deuda_general  = 0
-    cantidad_maestros    = 0
-    cantidad_ayucos      = 0
+    saldo_maestros       = 0
+    saldo_ayucos         = 0
 
     for t in trabajadores:
         semana_actual = Semana.query.filter_by(
@@ -621,9 +621,9 @@ def ver_obra(obra_id):
             'semanas': sorted(semanas_obra, key=lambda s: s.fecha_inicio, reverse=True)
         })
         if t.rol == 'maestro':
-            cantidad_maestros += 1
+            saldo_maestros += saldo_semana
         elif t.rol == 'ayuco':
-            cantidad_ayucos += 1
+            saldo_ayucos += saldo_semana
 
     notificaciones = Notificacion.query.filter_by(obra_id=obra_id, leida=False).all()
 
@@ -635,8 +635,8 @@ def ver_obra(obra_id):
         porcentaje_gastado=porcentaje_gastado,
         total_semana_actual=round(total_semana_actual, 2),
         total_deuda_general=round(total_deuda_general, 2),
-        cantidad_maestros=cantidad_maestros,
-        cantidad_ayucos=cantidad_ayucos,
+        saldo_maestros=round(saldo_maestros, 2),
+        saldo_ayucos=round(saldo_ayucos, 2),
         lunes=lunes,
         sabado=sabado,
         semana_offset=semana_offset,
