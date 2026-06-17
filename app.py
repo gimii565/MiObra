@@ -578,12 +578,22 @@ def ver_obra(obra_id):
         Trabajador.activo == True
     ).all() if todos_ids else []
 
-    semana_offset = request.args.get('semana_offset', 0, type=int)
     hoy    = date.today()
     lunes_actual = hoy - timedelta(days=hoy.weekday())
+    lunes_creacion = obra.fecha_inicio - timedelta(days=obra.fecha_inicio.weekday())
+
+    semana_offset = request.args.get('semana_offset', 0, type=int)
+
+    # Límites: no antes de la semana de creación, no después de la semana actual
+    offset_minimo = (lunes_creacion - lunes_actual).days // 7
+    offset_maximo = 0
+    semana_offset = max(offset_minimo, min(offset_maximo, semana_offset))
+
     lunes  = lunes_actual + timedelta(weeks=semana_offset)
     sabado = lunes + timedelta(days=5)
     es_semana_actual = (semana_offset == 0)
+    puede_retroceder = semana_offset > offset_minimo
+    puede_avanzar = semana_offset < offset_maximo
 
     total_retiros    = sum(r.monto for r in obra.retiros)
     saldo_disponible = obra.presupuesto_total - total_retiros
@@ -631,6 +641,8 @@ def ver_obra(obra_id):
         sabado=sabado,
         semana_offset=semana_offset,
         es_semana_actual=es_semana_actual,
+        puede_retroceder=puede_retroceder,
+        puede_avanzar=puede_avanzar,
         notificaciones=notificaciones
     )
 
