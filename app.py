@@ -717,8 +717,14 @@ def ver_semana(trabajador_id):
     if redir: return redir
     trabajador = Trabajador.query.get_or_404(trabajador_id)
     obra_id = request.args.get('obra_id', type=int) or trabajador.obra_id
-    hoy   = date.today()
-    lunes = hoy - timedelta(days=hoy.weekday())
+
+    hoy = date.today()
+    lunes_actual = hoy - timedelta(days=hoy.weekday())
+
+    semana_offset = request.args.get('semana_offset', 0, type=int)
+    lunes = lunes_actual + timedelta(weeks=semana_offset)
+    sabado = lunes + timedelta(days=5)
+    es_semana_actual = (semana_offset == 0)
 
     semana = Semana.query.filter_by(
         trabajador_id=trabajador_id,
@@ -727,21 +733,31 @@ def ver_semana(trabajador_id):
     ).first()
 
     if not semana:
-        semana_anterior = Semana.query.filter_by(
-            trabajador_id=trabajador_id,
-            obra_id=obra_id
-        ).order_by(Semana.fecha_inicio.desc()).first()
+        if es_semana_actual:
+            semana_anterior = Semana.query.filter_by(
+                trabajador_id=trabajador_id,
+                obra_id=obra_id
+            ).order_by(Semana.fecha_inicio.desc()).first()
 
-        saldo_ant = calcular_saldo(semana_anterior) if semana_anterior else 0
+            saldo_ant = calcular_saldo(semana_anterior) if semana_anterior else 0
 
-        semana = Semana(
-            trabajador_id=trabajador_id,
-            obra_id=obra_id,
-            fecha_inicio=lunes,
-            saldo_anterior=saldo_ant
-        )
-        db.session.add(semana)
-        db.session.commit()
+            semana = Semana(
+                trabajador_id=trabajador_id,
+                obra_id=obra_id,
+                fecha_inicio=lunes,
+                saldo_anterior=saldo_ant
+            )
+            db.session.add(semana)
+            db.session.commit()
+        else:
+            return redirect(url_for('ver_semana', trabajador_id=trabajador_id, obra_id=obra_id))
+
+    primera_semana = Semana.query.filter_by(
+        trabajador_id=trabajador_id, obra_id=obra_id
+    ).order_by(Semana.fecha_inicio.asc()).first()
+    offset_minimo = ((primera_semana.fecha_inicio - lunes_actual).days // 7) if primera_semana else 0
+    puede_retroceder = semana_offset > offset_minimo
+    puede_avanzar = semana_offset < 0
 
     dias        = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']
     asistencias = {a.dia: a for a in semana.asistencias}
@@ -751,7 +767,12 @@ def ver_semana(trabajador_id):
         semana=semana,
         dias=dias,
         asistencias=asistencias,
-        saldo_semana=calcular_saldo(semana)
+        saldo_semana=calcular_saldo(semana),
+        sabado=sabado,
+        semana_offset=semana_offset,
+        es_semana_actual=es_semana_actual,
+        puede_retroceder=puede_retroceder,
+        puede_avanzar=puede_avanzar
     )
 
 @app.route('/trabajador/<int:trabajador_id>/semana/reporte/pdf')
