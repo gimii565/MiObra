@@ -297,7 +297,7 @@
             {% endif %}
 
             <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-                <a href="/trabajador/{{ t.id }}/semana?obra_id={{ obra.id }}" class="btn-primary">Ver semana</a>
+                <a href="/trabajador/{{ t.id }}/semana?obra_id={{ obra.id }}&semana_offset={{ semana_offset }}" class="btn-primary">Ver semana</a>
                 <a href="/trabajador/{{ t.id }}/editar" class="btn-secondary">✏️ Editar</a>
 
                 {% if r.deuda_total > 0 %}
