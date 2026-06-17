@@ -578,9 +578,12 @@ def ver_obra(obra_id):
         Trabajador.activo == True
     ).all() if todos_ids else []
 
+    semana_offset = request.args.get('semana_offset', 0, type=int)
     hoy    = date.today()
-    lunes  = hoy - timedelta(days=hoy.weekday())
+    lunes_actual = hoy - timedelta(days=hoy.weekday())
+    lunes  = lunes_actual + timedelta(weeks=semana_offset)
     sabado = lunes + timedelta(days=5)
+    es_semana_actual = (semana_offset == 0)
 
     total_retiros    = sum(r.monto for r in obra.retiros)
     saldo_disponible = obra.presupuesto_total - total_retiros
@@ -588,6 +591,9 @@ def ver_obra(obra_id):
 
     resumen_trabajadores = []
     total_semana_actual  = 0
+    total_deuda_general  = 0
+    cantidad_maestros    = 0
+    cantidad_ayucos      = 0
 
     for t in trabajadores:
         semana_actual = Semana.query.filter_by(
@@ -597,12 +603,17 @@ def ver_obra(obra_id):
         total_semana_actual += saldo_semana
         semanas_obra = Semana.query.filter_by(trabajador_id=t.id, obra_id=obra_id).all()
         deuda_total = sum(calcular_saldo(s) for s in semanas_obra)
+        total_deuda_general += deuda_total
         resumen_trabajadores.append({
             'trabajador':   t,
             'saldo_semana': round(saldo_semana, 2),
             'deuda_total':  round(deuda_total, 2),
             'semanas': sorted(semanas_obra, key=lambda s: s.fecha_inicio, reverse=True)
         })
+        if t.rol == 'maestro':
+            cantidad_maestros += 1
+        elif t.rol == 'ayuco':
+            cantidad_ayucos += 1
 
     notificaciones = Notificacion.query.filter_by(obra_id=obra_id, leida=False).all()
 
@@ -613,8 +624,13 @@ def ver_obra(obra_id):
         saldo_disponible=saldo_disponible,
         porcentaje_gastado=porcentaje_gastado,
         total_semana_actual=round(total_semana_actual, 2),
+        total_deuda_general=round(total_deuda_general, 2),
+        cantidad_maestros=cantidad_maestros,
+        cantidad_ayucos=cantidad_ayucos,
         lunes=lunes,
         sabado=sabado,
+        semana_offset=semana_offset,
+        es_semana_actual=es_semana_actual,
         notificaciones=notificaciones
     )
 
