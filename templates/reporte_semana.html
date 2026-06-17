@@ -15,7 +15,6 @@
             padding: 16px;
         }
 
-        /* BOTONES - solo visibles en pantalla */
         .acciones {
             display: flex;
             gap: 10px;
@@ -36,7 +35,6 @@
         .btn-imprimir { background: #fff; color: #1a56db; border: 2px solid #1a56db; }
         .btn-volver   { background: #f1f5f9; color: #374151; border: 1.5px solid #d1d5db; }
 
-        /* CONTENIDO */
         .pagina {
             background: #fff;
             border-radius: 12px;
@@ -44,7 +42,6 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.08);
         }
 
-        /* ENCABEZADO */
         .header {
             display: flex;
             justify-content: space-between;
@@ -58,7 +55,6 @@
         .logo      { font-size: 20px; font-weight: 800; color: #1a56db; }
         .logo span { color: #f59e0b; }
 
-        /* DATOS */
         .datos-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -73,7 +69,6 @@
         .dato label { font-size: 10px; color: #888; font-weight: 600; text-transform: uppercase; }
         .dato span  { font-size: 13px; color: #111; font-weight: 500; }
 
-        /* SECCION */
         .seccion-title {
             font-size: 12px;
             font-weight: 700;
@@ -85,7 +80,6 @@
             border-bottom: 1.5px solid #e8eef8;
         }
 
-        /* TABLA ASISTENCIA */
         table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
         thead tr { background: #1a56db; }
         thead th { padding: 8px 10px; text-align: left; font-size: 11px; color: #fff; font-weight: 600; }
@@ -103,7 +97,6 @@
         .tipo-completo_noche { background: #d1fae5; color: #065f46; border: 1px solid #6366f1; }
         .tipo-ninguno        { background: #f1f5f9; color: #94a3b8; }
 
-        /* RESUMEN */
         .dos-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
         .box { border: 1px solid #e8eef8; border-radius: 8px; padding: 12px 14px; }
 
@@ -111,11 +104,10 @@
         .fila:last-child { border-bottom: none; }
         .fila .lbl { color: #555; }
         .fila .val { font-weight: 700; }
-        .azul  { color: #1a56db; }
-        .rojo  { color: #dc2626; }
-        .gris  { color: #94a3b8; font-style: italic; font-weight: 400 !important; }
+        .azul { color: #1a56db; }
+        .rojo { color: #dc2626; }
+        .gris { color: #94a3b8; font-style: italic; font-weight: 400 !important; }
 
-        /* SALDO */
         .saldo-final {
             background: #1a56db;
             color: #fff;
@@ -129,15 +121,12 @@
         .saldo-final .lbl   { font-size: 13px; opacity: 0.9; }
         .saldo-final .monto { font-size: 26px; font-weight: 800; }
 
-        /* FIRMAS */
         .firmas { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 14px; }
         .firma  { text-align: center; }
         .firma-linea { border-top: 1.5px solid #aaa; padding-top: 6px; margin-top: 44px; font-size: 11px; color: #555; line-height: 1.6; }
 
-        /* PIE */
         .footer { font-size: 10px; color: #bbb; display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px solid #e8eef8; }
 
-        /* PRINT */
         @media print {
             .acciones { display: none !important; }
             body { background: #fff; padding: 0; font-size: 12px; }
@@ -150,16 +139,14 @@
 </head>
 <body>
 
-<!-- BOTONES -->
 <div class="acciones">
     <a class="btn btn-volver" href="/trabajador/{{ trabajador.id }}/semana?obra_id={{ obra.id }}">← Volver</a>
-    <button class="btn btn-guardar" id="btn-guardar">💾 Guardar PDF</button>
+    <a class="btn btn-guardar" href="/trabajador/{{ trabajador.id }}/semana/reporte/pdf?obra_id={{ obra.id }}">💾 Guardar PDF</a>
     <button class="btn btn-imprimir" onclick="window.print()">🖨️ Imprimir</button>
 </div>
 
 <div class="pagina">
 
-    <!-- ENCABEZADO -->
     <div class="header">
         <div>
             <h1>Comprobante de Semana Laboral</h1>
@@ -168,7 +155,6 @@
         <div class="logo">Planilla<span>Obras</span></div>
     </div>
 
-    <!-- DATOS -->
     <div class="datos-grid">
         <div class="dato"><label>Trabajador</label><span>{{ trabajador.nombre }} {{ trabajador.apellido }}</span></div>
         <div class="dato"><label>Obra</label><span>{{ obra.nombre }}</span></div>
@@ -180,7 +166,6 @@
         <div class="dato"><label>Contratista</label><span>{{ contratista.nombre_completo }}</span></div>
     </div>
 
-    <!-- ASISTENCIA -->
     <div class="seccion-title">Registro de asistencia</div>
     <table>
         <thead>
@@ -212,7 +197,6 @@
         </tbody>
     </table>
 
-    <!-- RESUMEN + PAGOS -->
     <div class="dos-col">
         <div class="box">
             <div class="seccion-title">Resumen de jornales</div>
@@ -235,13 +219,11 @@
         </div>
     </div>
 
-    <!-- SALDO FINAL -->
     <div class="saldo-final">
         <span class="lbl">Saldo pendiente a cobrar:</span>
         <span class="monto">Bs. {{ "%.2f"|format(saldo_semana) }}</span>
     </div>
 
-    <!-- FIRMAS -->
     <div class="firmas">
         <div class="firma">
             <div class="firma-linea">Firma del Trabajador<br><strong>{{ trabajador.nombre }} {{ trabajador.apellido }}</strong></div>
@@ -251,25 +233,12 @@
         </div>
     </div>
 
-    <!-- PIE -->
     <div class="footer">
         <span>Planilla Obras &mdash; Sistema Digital de Control de Jornales</span>
         <span>Semana del {{ semana.fecha_inicio }} &mdash; {{ fecha_hoy }}</span>
     </div>
 
 </div>
-
-<script>
-// Guardar como PDF: oculta botones, dispara impresion (guardar como PDF), los vuelve
-document.getElementById('btn-guardar').addEventListener('click', function() {
-    const acciones = document.querySelector('.acciones');
-    acciones.style.display = 'none';
-    setTimeout(function() {
-        window.print();
-        acciones.style.display = 'flex';
-    }, 200);
-});
-</script>
 
 </body>
 </html>
