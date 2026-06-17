@@ -205,14 +205,28 @@ function actualizarBotones(dia, tipo) {
     const btnMedio    = document.getElementById(`btn-${dia}-medio`);
     const btnCompleto = document.getElementById(`btn-${dia}-completo`);
     const btnNoche    = document.getElementById(`btn-${dia}-noche`);
-    btnMedio.classList.remove('activo-medio');
-    btnCompleto.classList.remove('activo-completo');
-    btnNoche.classList.remove('activo-noche');
-    if (tipo === 'medio')               btnMedio.classList.add('activo-medio');
-    else if (tipo === 'completo')       btnCompleto.classList.add('activo-completo');
-    else if (tipo === 'noche')          btnNoche.classList.add('activo-noche');
-    else if (tipo === 'medio_noche')    { btnMedio.classList.add('activo-medio'); btnNoche.classList.add('activo-noche'); }
-    else if (tipo === 'completo_noche') { btnCompleto.classList.add('activo-completo'); btnNoche.classList.add('activo-noche'); }
+
+    // Quitar estilos inline y clases
+    [btnMedio, btnCompleto, btnNoche].forEach(btn => {
+        btn.classList.remove('activo-medio', 'activo-completo', 'activo-noche');
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.border = '';
+    });
+
+    // Aplicar color directo con style para que sea inmediato
+    if (tipo === 'medio' || tipo === 'medio_noche') {
+        btnMedio.style.background = '#f59e0b';
+        btnMedio.style.color = '#fff';
+    }
+    if (tipo === 'completo' || tipo === 'completo_noche') {
+        btnCompleto.style.background = '#16a34a';
+        btnCompleto.style.color = '#fff';
+    }
+    if (tipo === 'noche' || tipo === 'medio_noche' || tipo === 'completo_noche') {
+        btnNoche.style.background = '#6366f1';
+        btnNoche.style.color = '#fff';
+    }
 }
 
 function actualizarResumen() {
