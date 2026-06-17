@@ -206,26 +206,26 @@ function actualizarBotones(dia, tipo) {
     const btnCompleto = document.getElementById(`btn-${dia}-completo`);
     const btnNoche    = document.getElementById(`btn-${dia}-noche`);
 
-    // Quitar estilos inline y clases
     [btnMedio, btnCompleto, btnNoche].forEach(btn => {
-        btn.classList.remove('activo-medio', 'activo-completo', 'activo-noche');
         btn.style.background = '';
+        btn.style.borderColor = '';
         btn.style.color = '';
-        btn.style.border = '';
     });
 
-    // Aplicar color directo con style para que sea inmediato
     if (tipo === 'medio' || tipo === 'medio_noche') {
-        btnMedio.style.background = '#f59e0b';
-        btnMedio.style.color = '#fff';
+        btnMedio.style.background = '#fff3cd';
+        btnMedio.style.borderColor = '#f0ad00';
+        btnMedio.style.color = '#7a5500';
     }
     if (tipo === 'completo' || tipo === 'completo_noche') {
-        btnCompleto.style.background = '#16a34a';
-        btnCompleto.style.color = '#fff';
+        btnCompleto.style.background = '#d4edda';
+        btnCompleto.style.borderColor = '#28a745';
+        btnCompleto.style.color = '#155724';
     }
     if (tipo === 'noche' || tipo === 'medio_noche' || tipo === 'completo_noche') {
-        btnNoche.style.background = '#6366f1';
-        btnNoche.style.color = '#fff';
+        btnNoche.style.background = '#cce5ff';
+        btnNoche.style.borderColor = '#004085';
+        btnNoche.style.color = '#004085';
     }
 }
 
