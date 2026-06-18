@@ -189,7 +189,7 @@ def get_usuario_actual():
 # ─────────────────────────────────────────
 @app.context_processor
 def utilidades():
-    return dict(timedelta=timedelta, calcular_saldo=calcular_saldo, session=session)
+    return dict(timedelta=timedelta, calcular_saldo=calcular_saldo, session=session, today=date.today)
 
 # ─────────────────────────────────────────
 # LOGIN Y REGISTRO CONTRATISTA
@@ -898,7 +898,17 @@ def mi_semana(trabajador_id):
     trabajador = Trabajador.query.get_or_404(trabajador_id)
     obra_id = request.args.get('obra_id', type=int)
     hoy   = date.today()
-    lunes = hoy - timedelta(days=hoy.weekday())
+    lunes_actual = hoy - timedelta(days=hoy.weekday())
+
+    fecha_inicio_param = request.args.get('fecha_inicio')
+    if fecha_inicio_param:
+        try:
+            from datetime import datetime as dt
+            lunes = dt.strptime(fecha_inicio_param, '%Y-%m-%d').date()
+        except ValueError:
+            lunes = lunes_actual
+    else:
+        lunes = lunes_actual
 
     semana = Semana.query.filter_by(
         trabajador_id=trabajador_id,
@@ -906,7 +916,7 @@ def mi_semana(trabajador_id):
         fecha_inicio=lunes
     ).first()
 
-    if not semana:
+    if not semana and lunes == lunes_actual:
         semana_anterior = Semana.query.filter_by(
             trabajador_id=trabajador_id,
             obra_id=obra_id
@@ -923,16 +933,28 @@ def mi_semana(trabajador_id):
         db.session.add(semana)
         db.session.commit()
 
-    obra        = Obra.query.get(obra_id) if obra_id else None
-    asistencias = {a.dia: a for a in semana.asistencias}
-    saldo_total = calcular_saldo(semana)
+    if not semana:
+        return render_template('semana.html',
+            trabajador=trabajador,
+            semana=None,
+            dias=['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'],
+            asistencias={},
+            saldo_semana=0,
+            lunes=lunes,
+            obra_id=obra_id
+        )
 
-    return render_template('mi_semana.html',
+    dias        = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']
+    asistencias = {a.dia: a for a in semana.asistencias}
+
+    return render_template('semana.html',
         trabajador=trabajador,
         semana=semana,
+        dias=dias,
         asistencias=asistencias,
-        saldo_total=saldo_total,
-        obra=obra
+        saldo_semana=calcular_saldo(semana),
+        lunes=lunes,
+        obra_id=obra_id
     )
 
 @app.route('/semana/<int:semana_id>/pago', methods=['POST'])
