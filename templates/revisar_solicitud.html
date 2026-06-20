@@ -3,32 +3,32 @@
 {% block contenido %}
 
 <div class="encabezado">
-    <h1>🔔 Solicitud de obra</h1>
-    <a href="/trabajador/inicio" class="btn-secondary">← Volver</a>
+    <h1><i class="bi bi-bell-fill"></i> Solicitud de obra</h1>
+    <a href="/trabajador/inicio" class="btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 <div class="card" style="max-width:500px;margin:0 auto;">
     <p style="margin-bottom:6px;">
-        👷 <strong>{{ solicitud.contratista.usuario }}</strong> te invita a:
+        <i class="bi bi-person-workspace"></i> <strong>{{ solicitud.contratista.usuario }}</strong> te invita a:
     </p>
     <p style="font-size:20px;font-weight:bold;color:var(--primary);margin-bottom:16px;">
-        🏗️ {{ solicitud.obra.nombre }}
+        <i class="bi bi-building"></i> {{ solicitud.obra.nombre }}
     </p>
 
     {% if obra_activa %}
     <div style="background:#fff3cd;border-radius:10px;padding:14px;margin-bottom:16px;">
         <p style="font-weight:bold;color:#7a5500;margin-bottom:6px;">
-            ⚠️ Ya estás en una obra activa:
+            <i class="bi bi-exclamation-triangle-fill"></i> Ya estás en una obra activa:
             <strong>{{ obra_activa.obra.nombre }}</strong>
         </p>
         {% if deuda > 0 %}
         <p style="font-size:13px;color:#c00;margin-bottom:4px;">
-            💰 Tu contratista actual te debe <strong>Bs. {{ deuda }}</strong>.
+            <i class="bi bi-cash-coin"></i> Tu contratista actual te debe <strong>Bs. {{ deuda }}</strong>.
             No puedes salirte hasta que te paguen, pero puedes archivar la obra.
         </p>
         {% else %}
         <p style="font-size:13px;color:#155724;">
-            ✅ No tienes deudas pendientes. Puedes archivar o salirte libremente.
+            <i class="bi bi-check-circle-fill"></i> No tienes deudas pendientes. Puedes archivar o salirte libremente.
         </p>
         {% endif %}
     </div>
@@ -40,19 +40,19 @@
 
         <label style="display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer;">
             <input type="radio" name="accion_obra" value="archivar" checked>
-            <span>📦 Archivar <em>{{ obra_activa.obra.nombre }}</em> (queda pendiente, puedes volver)</span>
+            <span><i class="bi bi-box-seam-fill"></i> Archivar <em>{{ obra_activa.obra.nombre }}</em> (queda pendiente, puedes volver)</span>
         </label>
 
         {% if deuda == 0 %}
         <label style="display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer;">
             <input type="radio" name="accion_obra" value="salir">
-            <span>🚪 Salirme definitivamente de <em>{{ obra_activa.obra.nombre }}</em></span>
+            <span><i class="bi bi-box-arrow-right"></i> Salirme definitivamente de <em>{{ obra_activa.obra.nombre }}</em></span>
         </label>
         {% endif %}
 
         <div style="display:flex;gap:10px;margin-top:16px;">
             <button type="submit" class="btn-primary" style="background:#28a745;">
-                ✅ Aceptar y continuar
+                <i class="bi bi-check-circle-fill"></i> Aceptar y continuar
             </button>
             <a href="/trabajador/inicio" class="btn-secondary">Cancelar</a>
         </div>
@@ -64,7 +64,7 @@
         <input type="hidden" name="accion" value="aceptar">
         <div style="display:flex;gap:10px;margin-top:8px;">
             <button type="submit" class="btn-primary" style="background:#28a745;">
-                ✅ Aceptar
+                <i class="bi bi-check-circle-fill"></i> Aceptar
             </button>
             <a href="/trabajador/inicio" class="btn-secondary">Cancelar</a>
         </div>

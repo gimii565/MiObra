@@ -4,11 +4,11 @@
 
 <div class="encabezado">
     <h1>Agregar Trabajador</h1>
-    <a href="/obra/{{ obra.id }}" class="btn-secondary">← Volver</a>
+    <a href="/obra/{{ obra.id }}" class="btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 <div class="card" style="max-width:500px;">
-    <h3 style="margin-bottom:16px;color:var(--primary);">🔍 Buscar trabajador registrado</h3>
+    <h3 style="margin-bottom:16px;color:var(--primary);"><i class="bi bi-search"></i> Buscar trabajador registrado</h3>
 
     <div class="campo">
         <label>Buscar por nombre o apellido</label>
@@ -37,7 +37,7 @@
                 <input type="number" name="jornal_dia" placeholder="Ej: 120" step="0.01" required>
             </div>
             <button type="submit" class="btn-primary" style="width:100%;">
-                📨 Enviar invitación
+                <i class="bi bi-envelope-fill"></i> Enviar invitación
             </button>
         </form>
     </div>
@@ -68,7 +68,7 @@ function buscar(q) {
                      onmouseover="this.style.background='#fff8e1'"
                      onmouseout="this.style.background=''">
                     <strong>${t.nombre} ${t.apellido}</strong>
-                    <span style="color:#888;font-size:13px;margin-left:8px;">📞 ${t.telefono}</span>
+                    <span style="color:#888;font-size:13px;margin-left:8px;"><i class="bi bi-telephone-fill"></i> ${t.telefono}</span>
                 </div>
             `).join('');
         });
@@ -77,8 +77,8 @@ function buscar(q) {
 
 function seleccionar(id, nombre, tel) {
     document.getElementById('trabajador_id_input').value = id;
-    document.getElementById('nombre-seleccionado').textContent = '👤 ' + nombre;
-    document.getElementById('tel-seleccionado').textContent = '📞 ' + tel;
+    document.getElementById('nombre-seleccionado').innerHTML = '<i class="bi bi-person-fill"></i> ' + nombre;
+    document.getElementById('tel-seleccionado').innerHTML = '<i class="bi bi-telephone-fill"></i> ' + tel;
     document.getElementById('formulario-invitar').style.display = 'block';
     document.getElementById('resultados').innerHTML = '';
     document.getElementById('buscador').value = nombre;

@@ -3,8 +3,8 @@
 {% block contenido %}
 
 <div class="encabezado">
-    <h1>📦 Archivados</h1>
-    <a href="/obra/{{ obra.id }}" class="btn-secondary">← Volver</a>
+    <h1><i class="bi bi-box-seam-fill"></i> Archivados</h1>
+    <a href="/obra/{{ obra.id }}" class="btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px;">
@@ -22,18 +22,18 @@
 
             {% if r.deuda_total > 0 %}
             <div style="margin-top:8px;padding:10px;background:#fff3cd;border-radius:8px;">
-                <p style="font-size:13px;color:#7a5500;">⚠️ Deuda pendiente:</p>
+                <p style="font-size:13px;color:#7a5500;"><i class="bi bi-exclamation-triangle-fill"></i> Deuda pendiente:</p>
                 <p style="font-size:18px;font-weight:bold;color:#e65100;">Bs. {{ r.deuda_total }}</p>
             </div>
             {% else %}
             <div style="margin-top:8px;padding:10px;background:#d4edda;border-radius:8px;">
-                <p style="font-size:13px;color:#155724;">✅ Sin deudas</p>
+                <p style="font-size:13px;color:#155724;"><i class="bi bi-check-circle-fill"></i> Sin deudas</p>
             </div>
             {% endif %}
 
             <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
                 <a href="/trabajador/{{ t.id }}/semana?obra_id={{ obra.id }}" class="btn-secondary">
-                    📋 Ver historial
+                    <i class="bi bi-clipboard-check-fill"></i> Ver historial
                 </a>
                 <form method="POST" action="/trabajador/{{ t.id }}/desarchivar">
                     <input type="hidden" name="obra_id" value="{{ obra.id }}">
@@ -41,7 +41,7 @@
                             style="background:#d4edda;color:#155724;border:none;
                                    padding:10px 14px;border-radius:24px;cursor:pointer;
                                    font-size:13px;font-weight:700;margin-top:8px;">
-                        ✅ Desarchivar
+                        <i class="bi bi-check-circle-fill"></i> Desarchivar
                     </button>
                 </form>
             </div>

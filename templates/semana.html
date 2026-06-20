@@ -4,8 +4,8 @@
 
 <div class="encabezado">
     <h1>{{ trabajador.nombre }}</h1>
-    <a href="/obra/{{ semana.obra_id or trabajador.obra_id }}" class="btn-secondary">← Volver</a>
-    <a href="/trabajador/{{ trabajador.id }}/semana/reporte?obra_id={{ semana.obra_id or trabajador.obra_id }}" class="btn-secondary" style="background:#1a56db;color:#fff;border-color:#1a56db;">🖨️ Imprimir reporte</a>
+    <a href="/obra/{{ semana.obra_id or trabajador.obra_id }}" class="btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+    <a href="/trabajador/{{ trabajador.id }}/semana/reporte?obra_id={{ semana.obra_id or trabajador.obra_id }}" class="btn-secondary" style="background:#1a56db;color:#fff;border-color:#1a56db;"><i class="bi bi-printer-fill"></i> Imprimir reporte</a>
 </div>
 
 <div class="card" style="margin-bottom:20px;text-align:center;">
@@ -51,19 +51,19 @@
                 <td style="padding:6px;text-align:center;">
                     <button onclick="marcar('{{ dia }}', 'medio')" id="btn-{{ dia }}-medio"
                         class="btn-asist {% if tipo_actual == 'medio' or tipo_actual == 'medio_noche' %}activo-medio{% endif %}">
-                        ☀️ Medio
+                        <i class="bi bi-sun-fill"></i> Medio
                     </button>
                 </td>
                 <td style="padding:6px;text-align:center;">
                     <button onclick="marcar('{{ dia }}', 'completo')" id="btn-{{ dia }}-completo"
                         class="btn-asist {% if tipo_actual == 'completo' or tipo_actual == 'completo_noche' %}activo-completo{% endif %}">
-                        ✅ Comp.
+                        <i class="bi bi-check-circle-fill"></i> Comp.
                     </button>
                 </td>
                 <td style="padding:6px;text-align:center;">
                     <button onclick="marcar('{{ dia }}', 'noche')" id="btn-{{ dia }}-noche"
                         class="btn-asist {% if tipo_actual == 'noche' or tipo_actual == 'medio_noche' or tipo_actual == 'completo_noche' %}activo-noche{% endif %}">
-                        🌙 Noche
+                        <i class="bi bi-moon-stars-fill"></i> Noche
                     </button>
                 </td>
             </tr>

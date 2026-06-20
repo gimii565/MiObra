@@ -3,8 +3,8 @@
 {% block contenido %}
 
 <div class="encabezado">
-    <h1>👤 Mi Perfil</h1>
-    <a href="/contratista" class="btn-secondary">← Volver</a>
+    <h1><i class="bi bi-person-fill"></i> Mi Perfil</h1>
+    <a href="/contratista" class="btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 <div style="max-width:500px;margin:0 auto;">
@@ -12,14 +12,14 @@
     {% if exito %}
     <div style="background:#d4edda;border:1px solid #28a745;border-radius:8px;
                 padding:10px;margin-bottom:16px;color:#155724;font-size:14px;">
-        ✅ {{ exito }}
+        <i class="bi bi-check-circle-fill"></i> {{ exito }}
     </div>
     {% endif %}
 
     {% if error %}
     <div style="background:#ffe0e0;border:1px solid #ff6b6b;border-radius:8px;
                 padding:10px;margin-bottom:16px;color:#c00;font-size:14px;">
-        ❌ {{ error }}
+        <i class="bi bi-x-circle-fill"></i> {{ error }}
     </div>
     {% endif %}
 
@@ -35,7 +35,7 @@
                 <div style="width:100px;height:100px;border-radius:50%;background:var(--primary);
                             display:flex;align-items:center;justify-content:center;
                             font-size:40px;margin:0 auto;border:3px solid var(--primary);">
-                    👷
+                    <i class="bi bi-person-workspace"></i>
                 </div>
             {% endif %}
             <p style="margin-top:8px;font-weight:bold;color:var(--text);">{{ u.usuario }}</p>
@@ -69,7 +69,7 @@
 
             <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:8px;">
                 <p style="font-weight:bold;margin-bottom:12px;color:var(--text);">
-                    🔒 Cambiar contraseña (opcional)
+                    <i class="bi bi-lock-fill"></i> Cambiar contraseña (opcional)
                 </p>
                 <div class="campo">
                     <label>Contraseña actual</label>
@@ -89,7 +89,7 @@
             </div>
 
             <button type="submit" class="btn-primary" style="width:100%;margin-top:8px;">
-                💾 Guardar cambios
+                <i class="bi bi-floppy-fill"></i> Guardar cambios
             </button>
         </form>
     </div>

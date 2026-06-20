@@ -3,8 +3,8 @@
 {% block contenido %}
 
 <div class="encabezado">
-    <h1>⚙️ Configuración</h1>
-    <a href="/" class="btn-secondary">← Volver</a>
+    <h1><i class="bi bi-gear-fill"></i> Configuración</h1>
+    <a href="/" class="btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 <div class="card" style="max-width:500px;">
@@ -32,7 +32,7 @@
     function actualizarBoton() {
         const esOscuro = document.body.classList.contains('oscuro');
         const btn = document.getElementById('btn-config-tema');
-        if (btn) btn.textContent = esOscuro ? '☀️ Modo claro' : '🌙 Modo oscuro';
+        if (btn) btn.innerHTML = esOscuro ? '<i class="bi bi-sun-fill"></i> Modo claro' : '<i class="bi bi-moon-stars-fill"></i> Modo oscuro';
     }
     actualizarBoton();
 
@@ -40,7 +40,7 @@
         const esOscuro = document.body.classList.toggle('oscuro');
         localStorage.setItem('tema', esOscuro ? 'oscuro' : 'claro');
         const btnNav = document.getElementById('btn-tema');
-        if (btnNav) btnNav.textContent = esOscuro ? '☀️' : '🌙';
+        if (btnNav) btnNav.innerHTML = esOscuro ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
         actualizarBoton();
     }
 </script>

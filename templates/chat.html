@@ -7,7 +7,7 @@
             margin-bottom:16px;position:relative;">
     <div style="display:flex;align-items:center;gap:10px;">
         <a href="javascript:history.back()"
-           style="color:var(--text);font-size:22px;text-decoration:none;">←</a>
+           style="color:var(--text);font-size:22px;text-decoration:none;"><i class="bi bi-arrow-left"></i></a>
         {% if otro_tipo == 'trabajador' %}
             {% if otro.foto_perfil %}
             <img src="/static/fotos/{{ otro.foto_perfil }}"
@@ -15,7 +15,7 @@
             {% else %}
             <div style="width:38px;height:38px;border-radius:50%;background:var(--primary);
                         display:flex;align-items:center;justify-content:center;font-size:18px;">
-                🧱
+                <i class="bi bi-bricks"></i>
             </div>
             {% endif %}
             <div>
@@ -31,7 +31,7 @@
             {% else %}
             <div style="width:38px;height:38px;border-radius:50%;background:var(--primary);
                         display:flex;align-items:center;justify-content:center;font-size:18px;">
-                👷
+                <i class="bi bi-person-workspace"></i>
             </div>
             {% endif %}
             <div>
@@ -46,7 +46,7 @@
         <button onclick="toggleMenuChat()"
                 style="background:none;border:none;cursor:pointer;
                        font-size:24px;padding:8px;color:var(--text);">
-            ⋮
+            <i class="bi bi-three-dots-vertical"></i>
         </button>
         <div id="menu-chat"
              style="display:none;position:absolute;right:0;top:44px;
@@ -65,7 +65,7 @@
                                cursor:pointer;text-align:left;color:#e65100;
                                font-size:14px;font-weight:700;display:flex;
                                align-items:center;gap:10px;">
-                    🗑️ Borrar chat
+                    <i class="bi bi-trash-fill"></i> Borrar chat
                 </button>
             </form>
         </div>
@@ -92,7 +92,7 @@
         <button onclick="eliminarMensaje({{ m.id }})" title="Eliminar"
                 style="background:none;border:none;cursor:pointer;font-size:14px;
                        opacity:0.4;padding:4px;flex-shrink:0;color:var(--text);">
-            🗑️
+            <i class="bi bi-trash-fill"></i>
         </button>
         {% endif %}
 
@@ -124,7 +124,7 @@
                    width:46px;height:46px;cursor:pointer;font-size:20px;
                    display:flex;align-items:center;justify-content:center;
                    flex-shrink:0;color:#1a1a1a;">
-        ➤
+        <i class="bi bi-send-fill"></i>
     </button>
 </div>
 
@@ -146,7 +146,7 @@ socket.on('nuevo_mensaje', (data) => {
     wrap.style.cssText = `display:flex;justify-content:${esMio?'flex-end':'flex-start'};margin-bottom:10px;align-items:flex-end;gap:6px;`;
     const btnElim = esMio ? `<button onclick="eliminarMensaje(${data.id})"
         style="background:none;border:none;cursor:pointer;font-size:14px;
-               opacity:0.4;padding:4px;flex-shrink:0;">🗑️</button>` : '';
+               opacity:0.4;padding:4px;flex-shrink:0;"><i class="bi bi-trash-fill"></i></button>` : '';
     wrap.innerHTML = `${btnElim}
         <div style="max-width:72%;padding:10px 14px;border-radius:16px;
                     background:${esMio?'var(--primary)':'var(--surface)'};

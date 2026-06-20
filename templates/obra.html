@@ -4,14 +4,14 @@
 
 <div class="encabezado">
     <h1>{{ obra.nombre }}</h1>
-    <a href="/contratista" class="btn-secondary">← Volver</a>
+    <a href="/contratista" class="btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 <div class="card" style="margin-bottom:20px;">
     <p>{{ obra.descripcion }}</p>
 
     <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
-        <h3 style="font-size:15px;margin-bottom:2px;">💰 Presupuesto de la obra</h3>
+        <h3 style="font-size:15px;margin-bottom:2px;"><i class="bi bi-cash-coin"></i> Presupuesto de la obra</h3>
         <p style="font-size:12px;margin-bottom:14px;">Control de gastos vs presupuesto</p>
 
         <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
@@ -39,13 +39,13 @@
     </div>
 
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
-        <a href="/obra/{{ obra.id }}/fotos" class="btn-secondary">📸 Ver fotos</a>
-        <a href="/obra/{{ obra.id }}/archivados" class="btn-secondary">📦 Ver archivados</a>
+        <a href="/obra/{{ obra.id }}/fotos" class="btn-secondary"><i class="bi bi-camera-fill"></i> Ver fotos</a>
+        <a href="/obra/{{ obra.id }}/archivados" class="btn-secondary"><i class="bi bi-box-seam-fill"></i> Ver archivados</a>
     </div>
 </div>
 
 <div class="card" style="margin-bottom:20px;border-left:4px solid #e65100;">
-    <h3 style="color:#e65100;margin-bottom:12px;">💰 Registrar Retiro</h3>
+    <h3 style="color:#e65100;margin-bottom:12px;"><i class="bi bi-cash-coin"></i> Registrar Retiro</h3>
     <form method="POST" action="/obra/{{ obra.id }}/retiro">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
             <div class="campo" style="flex:1;min-width:120px;">
@@ -137,11 +137,11 @@
     <div class="card" style="border-left:4px solid {% if tipo_notif == 'salida_con_deuda' %}#e65100{% else %}#28a745{% endif %};margin-bottom:12px;">
         <p style="font-weight:bold;margin-bottom:8px;">
             {% if tipo_notif == 'salida_con_deuda' %}
-            ⚠️ <strong>{{ n.trabajador.nombre }} {{ n.trabajador.apellido or '' }}</strong>
+            <i class="bi bi-exclamation-triangle-fill"></i> <strong>{{ n.trabajador.nombre }} {{ n.trabajador.apellido or '' }}</strong>
             se está saliendo de esta obra. Se le debe <strong style="color:#e65100;">Bs. {{ deuda }}</strong>.
             La obra quedará archivada hasta que se salde la deuda.
             {% else %}
-            👋 <strong>{{ n.trabajador.nombre }} {{ n.trabajador.apellido or '' }}</strong>
+            <i class="bi bi-emoji-smile-fill"></i> <strong>{{ n.trabajador.nombre }} {{ n.trabajador.apellido or '' }}</strong>
             se está saliendo de esta obra. No tiene deudas pendientes.
             {% endif %}
         </p>
@@ -153,7 +153,7 @@
                     style="background:#fff3cd;color:#7a5500;border:none;
                            padding:10px 16px;border-radius:24px;cursor:pointer;
                            font-size:13px;font-weight:700;">
-                    📦 Aceptar y archivar
+                    <i class="bi bi-box-seam-fill"></i> Aceptar y archivar
                 </button>
             </form>
             {% else %}
@@ -163,7 +163,7 @@
                     style="background:#d4edda;color:#155724;border:none;
                            padding:10px 16px;border-radius:24px;cursor:pointer;
                            font-size:13px;font-weight:700;">
-                    ✅ Aceptar
+                    <i class="bi bi-check-circle-fill"></i> Aceptar
                 </button>
             </form>
             <form method="POST" action="/notificacion/{{ n.id }}/accion">
@@ -172,7 +172,7 @@
                     style="background:#ffe0e0;color:#c00;border:none;
                            padding:10px 16px;border-radius:24px;cursor:pointer;
                            font-size:13px;font-weight:700;">
-                    🗑️ Eliminar de la obra
+                    <i class="bi bi-trash-fill"></i> Eliminar de la obra
                 </button>
             </form>
             {% endif %}
@@ -203,18 +203,18 @@
 
             {% if r.deuda_total > 0 %}
             <div style="margin-top:8px;padding:10px;background:#fff3cd;border-radius:8px;">
-                <p style="font-size:13px;color:#7a5500;">⚠️ Deuda total acumulada:</p>
+                <p style="font-size:13px;color:#7a5500;"><i class="bi bi-exclamation-triangle-fill"></i> Deuda total acumulada:</p>
                 <p style="font-size:18px;font-weight:bold;color:#e65100;">Bs. {{ r.deuda_total }}</p>
             </div>
             {% else %}
             <div style="margin-top:8px;padding:10px;background:#d4edda;border-radius:8px;">
-                <p style="font-size:13px;color:#155724;">✅ Al día — sin deudas</p>
+                <p style="font-size:13px;color:#155724;"><i class="bi bi-check-circle-fill"></i> Al día — sin deudas</p>
             </div>
             {% endif %}
 
             <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
                 <a href="/trabajador/{{ t.id }}/semana?obra_id={{ obra.id }}&semana_offset={{ semana_offset | int }}" class="btn-primary">Ver semana</a>
-                <a href="/trabajador/{{ t.id }}/editar" class="btn-secondary">✏️ Editar</a>
+                <a href="/trabajador/{{ t.id }}/editar" class="btn-secondary"><i class="bi bi-pencil-fill"></i> Editar</a>
 
                 {% if r.deuda_total > 0 %}
                 <form method="POST" action="/trabajador/{{ t.id }}/archivar"
@@ -224,7 +224,7 @@
                             style="background:#fff3cd;color:#7a5500;border:none;
                                    padding:10px 14px;border-radius:24px;cursor:pointer;
                                    font-size:13px;font-weight:700;margin-top:8px;">
-                        📦 Archivar
+                        <i class="bi bi-box-seam-fill"></i> Archivar
                     </button>
                 </form>
                 {% else %}
@@ -235,7 +235,7 @@
                             style="background:#ffe0e0;color:#c00;border:none;
                                    padding:10px 14px;border-radius:24px;cursor:pointer;
                                    font-size:13px;font-weight:700;margin-top:8px;">
-                        🗑️ Quitar
+                        <i class="bi bi-trash-fill"></i> Quitar
                     </button>
                 </form>
                 {% endif %}

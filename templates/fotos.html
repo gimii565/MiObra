@@ -3,8 +3,8 @@
 {% block contenido %}
 
 <div class="encabezado">
-    <h1>📸 Fotos — {{ obra.nombre }}</h1>
-    <a href="/obra/{{ obra.id }}" class="btn-secondary">← Volver</a>
+    <h1><i class="bi bi-camera-fill"></i> Fotos — {{ obra.nombre }}</h1>
+    <a href="/obra/{{ obra.id }}" class="btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 <!-- Subir foto -->
@@ -20,7 +20,7 @@
             <label>Nota del avance</label>
             <input type="text" name="nota" placeholder="Ej: Columnas del segundo piso" autocomplete="off">
         </div>
-        <button type="submit" class="btn-primary">📤 Subir Foto</button>
+        <button type="submit" class="btn-primary"><i class="bi bi-upload"></i> Subir Foto</button>
     </form>
 </div>
 
@@ -39,7 +39,7 @@
             <form method="POST" action="/obra/{{ obra.id }}/fotos/eliminar/{{ foto.id }}"
                   onsubmit="return confirm('¿Eliminar esta foto?')">
                 <button type="submit" style="background:none;border:none;color:red;cursor:pointer;font-size:13px;">
-                    🗑️ Eliminar
+                    <i class="bi bi-trash-fill"></i> Eliminar
                 </button>
             </form>
         </div>

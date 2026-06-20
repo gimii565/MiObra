@@ -3,8 +3,8 @@
 {% block contenido %}
 
 <div class="encabezado">
-    <h1>📦 Obras anteriores</h1>
-    <a href="/trabajador/inicio" class="btn-secondary">← Volver</a>
+    <h1><i class="bi bi-box-seam-fill"></i> Obras anteriores</h1>
+    <a href="/trabajador/inicio" class="btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 {% if obras_archivadas %}
@@ -25,24 +25,24 @@
         {% endif %}
         {% if item.to.obra.usuario.telefono %}
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">
-            📞 {{ item.to.obra.usuario.telefono }}
+            <i class="bi bi-telephone-fill"></i> {{ item.to.obra.usuario.telefono }}
         </p>
         {% endif %}
 
         {% if item.deuda > 0 %}
         <div style="margin-top:8px;padding:10px;background:#fff3cd;border-radius:8px;">
-            <p style="font-size:13px;color:#7a5500;">⚠️ Te deben:</p>
+            <p style="font-size:13px;color:#7a5500;"><i class="bi bi-exclamation-triangle-fill"></i> Te deben:</p>
             <p style="font-size:22px;font-weight:bold;color:#e65100;">Bs. {{ item.deuda }}</p>
         </div>
         {% else %}
         <div style="margin-top:8px;padding:10px;background:#d4edda;border-radius:8px;">
-            <p style="font-size:13px;color:#155724;">✅ Sin deudas pendientes</p>
+            <p style="font-size:13px;color:#155724;"><i class="bi bi-check-circle-fill"></i> Sin deudas pendientes</p>
         </div>
         {% endif %}
 
         <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
             <a href="/mi-semana/{{ t.id }}?obra_id={{ item.to.obra.id }}" class="btn-secondary">
-                📋 Ver historial
+                <i class="bi bi-clipboard-check-fill"></i> Ver historial
             </a>
             {% if item.deuda == 0 %}
             <form method="POST" action="/trabajador/salir-obra/{{ item.to.obra.id }}"
@@ -51,7 +51,7 @@
                     style="background:#ffe0e0;color:#c00;border:none;
                            padding:10px 14px;border-radius:24px;cursor:pointer;
                            font-size:13px;font-weight:700;">
-                    🚪 Salirme
+                    <i class="bi bi-box-arrow-right"></i> Salirme
                 </button>
             </form>
             {% endif %}

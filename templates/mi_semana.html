@@ -4,7 +4,7 @@
 
 <div class="encabezado">
     <h1>{{ trabajador.nombre }}</h1>
-    <a href="/trabajador/inicio" class="btn-secondary">← Volver</a>
+    <a href="/trabajador/inicio" class="btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 {% if obra %}
@@ -12,7 +12,7 @@
             border-radius:10px;border-left:4px solid var(--primary);">
     <p style="font-size:13px;color:var(--text-muted);margin:0;">Obra actual</p>
     <p style="font-size:16px;font-weight:700;color:var(--primary);margin:0;">
-        🏗️ {{ obra.nombre }}
+        <i class="bi bi-building"></i> {{ obra.nombre }}
     </p>
 </div>
 {% endif %}
@@ -44,15 +44,15 @@
                 <td style="padding:10px;text-transform:capitalize;font-weight:bold;">{{ dia }}</td>
                 <td style="padding:10px;text-align:center;">
                     {% if tipo == 'completo' %}
-                        <span style="color:green;">✅ Día completo</span>
+                        <span style="color:green;"><i class="bi bi-check-circle-fill"></i> Día completo</span>
                     {% elif tipo == 'medio' %}
-                        <span style="color:orange;">☀️ Medio día</span>
+                        <span style="color:orange;"><i class="bi bi-sun-fill"></i> Medio día</span>
                     {% elif tipo == 'noche' %}
-                        <span style="color:#004085;">🌙 Solo noche</span>
+                        <span style="color:#004085;"><i class="bi bi-moon-stars-fill"></i> Solo noche</span>
                     {% elif tipo == 'medio_noche' %}
-                        <span style="color:orange;">☀️🌙 Medio + Noche</span>
+                        <span style="color:orange;"><i class="bi bi-sun-fill"></i><i class="bi bi-moon-stars-fill"></i> Medio + Noche</span>
                     {% elif tipo == 'completo_noche' %}
-                        <span style="color:green;">✅🌙 Completo + Noche</span>
+                        <span style="color:green;"><i class="bi bi-check-circle-fill"></i><i class="bi bi-moon-stars-fill"></i> Completo + Noche</span>
                     {% else %}
                         <span style="color:#ccc;">— No trabajó</span>
                     {% endif %}
