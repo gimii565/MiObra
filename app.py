@@ -594,6 +594,7 @@ def ver_obra(obra_id):
     es_semana_actual = (semana_offset == 0)
     puede_retroceder = semana_offset > offset_minimo
     puede_avanzar = semana_offset < offset_maximo
+    print(f"DEBUG ver_obra: semana_offset={semana_offset}, offset_minimo={offset_minimo}, offset_maximo={offset_maximo}")
 
     total_retiros    = sum(r.monto for r in obra.retiros)
     saldo_disponible = obra.presupuesto_total - total_retiros
