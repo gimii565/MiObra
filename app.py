@@ -7,6 +7,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
 from datetime import date, timedelta, datetime
 from weasyprint import HTML as WPHTML
+from supabase import create_client
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -187,9 +191,17 @@ def get_usuario_actual():
 # ─────────────────────────────────────────
 # CONTEXT PROCESSOR
 # ─────────────────────────────────────────
+SUPABASE_STORAGE_URL = f"{os.getenv('SUPABASE_URL')}/storage/v1/object/public/fotos"
+
 @app.context_processor
 def utilidades():
-    return dict(timedelta=timedelta, calcular_saldo=calcular_saldo, session=session, today=date.today)
+    return dict(
+        timedelta=timedelta,
+        calcular_saldo=calcular_saldo,
+        session=session,
+        today=date.today,
+        supabase_url=SUPABASE_STORAGE_URL
+    )
 
 # ─────────────────────────────────────────
 # LOGIN Y REGISTRO CONTRATISTA
@@ -246,8 +258,12 @@ def registro():
                 file = request.files['foto']
                 if file and file.filename and allowed_file(file.filename):
                     filename = secure_filename(f"perfil_{u.id}_{file.filename}")
-                    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-                    file.save(os.path.join(UPLOAD_FOLDER, filename))
+                    file_bytes = file.read()
+                    supabase_client.storage.from_('fotos').upload(
+                        filename,
+                        file_bytes,
+                        {'content-type': file.content_type}
+                    )
                     u.foto_perfil = filename
 
             db.session.commit()
@@ -316,8 +332,12 @@ def trabajador_registro():
                 file = request.files['foto']
                 if file and file.filename and allowed_file(file.filename):
                     filename = secure_filename(f"trab_{t.id}_{file.filename}")
-                    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-                    file.save(os.path.join(UPLOAD_FOLDER, filename))
+                    file_bytes = file.read()
+                    supabase_client.storage.from_('fotos').upload(
+                        filename,
+                        file_bytes,
+                        {'content-type': file.content_type}
+                    )
                     t.foto_perfil = filename
 
             db.session.commit()
@@ -1006,8 +1026,12 @@ def subir_foto(obra_id):
     file = request.files['foto']
     if file and allowed_file(file.filename):
         filename = secure_filename(f"{obra_id}_{date.today()}_{file.filename}")
-        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        file_bytes = file.read()
+        supabase_client.storage.from_('fotos').upload(
+            filename,
+            file_bytes,
+            {'content-type': file.content_type}
+        )
         foto = Foto(obra_id=obra_id, filename=filename,
                     nota=request.form.get('nota', ''), fecha=date.today())
         db.session.add(foto)
@@ -1020,7 +1044,7 @@ def eliminar_foto(foto_id, obra_id):
     if redir: return redir
     foto = Foto.query.get_or_404(foto_id)
     try:
-        os.remove(os.path.join(UPLOAD_FOLDER, foto.filename))
+        supabase_client.storage.from_('fotos').remove([foto.filename])
     except:
         pass
     db.session.delete(foto)
@@ -1298,12 +1322,20 @@ def perfil():
                 error = 'La contraseña debe tener al menos 4 caracteres'
             else:
                 u.password = generate_password_hash(nueva_pass)
-        if 'foto' in request.files:
-            file = request.files['foto']
-            if file and file.filename and allowed_file(file.filename):
-                filename = secure_filename(f"perfil_{u.id}_{file.filename}")
-                os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
+            if 'foto' in request.files:
+                file = request.files['foto']
+                if file and file.filename and allowed_file(file.filename):
+                    filename = secure_filename(f"perfil_{u.id}_{file.filename}")
+                    file_bytes = file.read()
+                    try:
+                        supabase_client.storage.from_('fotos').remove([filename])
+                    except:
+                        pass
+                    supabase_client.storage.from_('fotos').upload(
+                        filename,
+                        file_bytes,
+                        {'content-type': file.content_type}
+                )
                 u.foto_perfil = filename
         if not error:
             db.session.commit()
@@ -1343,8 +1375,16 @@ def trabajador_perfil():
             file = request.files['foto']
             if file and file.filename and allowed_file(file.filename):
                 filename = secure_filename(f"trab_{t.id}_{file.filename}")
-                os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                file_bytes = file.read()
+                try:
+                    supabase_client.storage.from_('fotos').remove([filename])
+                except:
+                    pass
+                supabase_client.storage.from_('fotos').upload(
+                    filename,
+                    file_bytes,
+                    {'content-type': file.content_type}
+                )
                 t.foto_perfil = filename
                 session['trabajador_foto'] = filename
         if not error:
