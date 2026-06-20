@@ -1027,11 +1027,15 @@ def subir_foto(obra_id):
     if file and allowed_file(file.filename):
         filename = secure_filename(f"{obra_id}_{date.today()}_{file.filename}")
         file_bytes = file.read()
-        supabase_client.storage.from_('fotos').upload(
-            filename,
-            file_bytes,
-            {'content-type': file.content_type}
-        )
+        try:
+            supabase_client.storage.from_('fotos').upload(
+                filename,
+                file_bytes,
+                {'content-type': file.content_type}
+            )
+            print(f"Foto subida a Supabase: {filename}")
+        except Exception as e:
+            print(f"ERROR Supabase upload: {e}")
         foto = Foto(obra_id=obra_id, filename=filename,
                     nota=request.form.get('nota', ''), fecha=date.today())
         db.session.add(foto)
