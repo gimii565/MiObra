@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session, make_response, make_response, make_response
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, make_response
 from flask_socketio import SocketIO, emit, join_room
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
@@ -594,7 +594,6 @@ def ver_obra(obra_id):
     es_semana_actual = (semana_offset == 0)
     puede_retroceder = semana_offset > offset_minimo
     puede_avanzar = semana_offset < offset_maximo
-    print(f"DEBUG ver_obra: semana_offset={semana_offset}, offset_minimo={offset_minimo}, offset_maximo={offset_maximo}")
 
     total_retiros    = sum(r.monto for r in obra.retiros)
     saldo_disponible = obra.presupuesto_total - total_retiros
@@ -734,24 +733,21 @@ def ver_semana(trabajador_id):
     ).first()
 
     if not semana:
-        if es_semana_actual:
-            semana_anterior = Semana.query.filter_by(
-                trabajador_id=trabajador_id,
-                obra_id=obra_id
-            ).order_by(Semana.fecha_inicio.desc()).first()
+        semana_anterior = Semana.query.filter_by(
+            trabajador_id=trabajador_id,
+            obra_id=obra_id
+        ).order_by(Semana.fecha_inicio.desc()).first()
 
-            saldo_ant = calcular_saldo(semana_anterior) if semana_anterior else 0
+        saldo_ant = calcular_saldo(semana_anterior) if semana_anterior else 0
 
-            semana = Semana(
-                trabajador_id=trabajador_id,
-                obra_id=obra_id,
-                fecha_inicio=lunes,
-                saldo_anterior=saldo_ant
-            )
-            db.session.add(semana)
-            db.session.commit()
-        else:
-            return redirect(url_for('ver_semana', trabajador_id=trabajador_id, obra_id=obra_id))
+        semana = Semana(
+            trabajador_id=trabajador_id,
+            obra_id=obra_id,
+            fecha_inicio=lunes,
+            saldo_anterior=saldo_ant if es_semana_actual else 0
+        )
+        db.session.add(semana)
+        db.session.commit()
 
     primera_semana = Semana.query.filter_by(
         trabajador_id=trabajador_id, obra_id=obra_id
