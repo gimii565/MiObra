@@ -319,6 +319,16 @@ nav a {
     #nav-desktop-links { display: none !important; }
 }
 
+/* Ocultar nav desktop en celular */
+@media (max-width: 768px) {
+    #nav-desktop-links { display: none !important; }
+}
+#nav-desktop-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 /* ── NAVBAR DESKTOP LINKS ── */
 .nav-link-desktop {
     color: var(--nav-text);
