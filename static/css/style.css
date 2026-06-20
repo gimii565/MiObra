@@ -315,6 +315,10 @@ nav a {
     }
 }
 
+@media (max-width: 768px) {
+    #nav-desktop-links { display: none !important; }
+}
+
 /* ── NAVBAR DESKTOP LINKS ── */
 .nav-link-desktop {
     color: var(--nav-text);
