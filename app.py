@@ -1384,12 +1384,16 @@ def trabajador_perfil():
                     supabase_client.storage.from_('Fotos').remove([filename])
                 except:
                     pass
-                supabase_client.storage.from_('Fotos').upload(
-                    filename,
-                    file_bytes,
-                    {'content-type': file.content_type}
-                )
-                t.foto_perfil = filename
+                try:
+                    supabase_client.storage.from_('Fotos').upload(
+                        filename,
+                        file_bytes,
+                        {'content-type': file.content_type}
+                    )
+                    print(f"Foto perfil subida: {filename}")
+                except Exception as e:
+                    print(f"ERROR perfil upload: {e}")
+                u.foto_perfil = filename
                 session['trabajador_foto'] = filename
         if not error:
             db.session.commit()
