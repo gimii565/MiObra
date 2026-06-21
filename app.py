@@ -964,7 +964,7 @@ def mi_semana(trabajador_id):
     dias        = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']
     asistencias = {a.dia: a for a in semana.asistencias}
 
-        sabado = lunes + timedelta(days=5)
+    sabado = lunes + timedelta(days=5)
     return render_template('semana.html',
         trabajador=trabajador,
         semana=semana,
