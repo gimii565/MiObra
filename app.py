@@ -9,7 +9,7 @@ from datetime import date, timedelta, datetime
 from weasyprint import HTML as WPHTML
 from supabase import create_client
 SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+SUPABASE_KEY = os.getenv('SUPABASE_SECRET_KEY')
 supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 app = Flask(__name__)
