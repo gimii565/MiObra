@@ -191,7 +191,7 @@ def get_usuario_actual():
 # ─────────────────────────────────────────
 # CONTEXT PROCESSOR
 # ─────────────────────────────────────────
-SUPABASE_STORAGE_URL = f"https://nstciddinmrdigagjbxy.supabase.co/storage/v1/object/public/fotos"
+SUPABASE_STORAGE_URL = f"https://nstciddinmrdigagjbxy.supabase.co/storage/v1/object/public/Fotos"
 
 @app.context_processor
 def utilidades():
@@ -259,7 +259,7 @@ def registro():
                 if file and file.filename and allowed_file(file.filename):
                     filename = secure_filename(f"perfil_{u.id}_{file.filename}")
                     file_bytes = file.read()
-                    supabase_client.storage.from_('fotos').upload(
+                    supabase_client.storage.from_('Fotos').upload(
                         filename,
                         file_bytes,
                         {'content-type': file.content_type}
@@ -333,7 +333,7 @@ def trabajador_registro():
                 if file and file.filename and allowed_file(file.filename):
                     filename = secure_filename(f"trab_{t.id}_{file.filename}")
                     file_bytes = file.read()
-                    supabase_client.storage.from_('fotos').upload(
+                    supabase_client.storage.from_('Fotos').upload(
                         filename,
                         file_bytes,
                         {'content-type': file.content_type}
@@ -1028,7 +1028,7 @@ def subir_foto(obra_id):
         filename = secure_filename(f"{obra_id}_{date.today()}_{file.filename}")
         file_bytes = file.read()
         try:
-            supabase_client.storage.from_('fotos').upload(
+            supabase_client.storage.from_('Fotos').upload(
                 filename,
                 file_bytes,
                 {'content-type': file.content_type}
@@ -1048,7 +1048,7 @@ def eliminar_foto(foto_id, obra_id):
     if redir: return redir
     foto = Foto.query.get_or_404(foto_id)
     try:
-        supabase_client.storage.from_('fotos').remove([foto.filename])
+        supabase_client.storage.from_('Fotos').remove([foto.filename])
     except:
         pass
     db.session.delete(foto)
@@ -1332,10 +1332,10 @@ def perfil():
                     filename = secure_filename(f"perfil_{u.id}_{file.filename}")
                     file_bytes = file.read()
                     try:
-                        supabase_client.storage.from_('fotos').remove([filename])
+                        supabase_client.storage.from_('Fotos').remove([filename])
                     except:
                         pass
-                    supabase_client.storage.from_('fotos').upload(
+                    supabase_client.storage.from_('Fotos').upload(
                         filename,
                         file_bytes,
                         {'content-type': file.content_type}
@@ -1381,10 +1381,10 @@ def trabajador_perfil():
                 filename = secure_filename(f"trab_{t.id}_{file.filename}")
                 file_bytes = file.read()
                 try:
-                    supabase_client.storage.from_('fotos').remove([filename])
+                    supabase_client.storage.from_('Fotos').remove([filename])
                 except:
                     pass
-                supabase_client.storage.from_('fotos').upload(
+                supabase_client.storage.from_('Fotos').upload(
                     filename,
                     file_bytes,
                     {'content-type': file.content_type}
