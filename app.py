@@ -191,7 +191,7 @@ def get_usuario_actual():
 # ─────────────────────────────────────────
 # CONTEXT PROCESSOR
 # ─────────────────────────────────────────
-SUPABASE_STORAGE_URL = f"{os.getenv('SUPABASE_URL')}/storage/v1/object/public/fotos"
+SUPABASE_STORAGE_URL = f"https://nstciddinmrdigagjbxy.supabase.co/storage/v1/object/public/fotos"
 
 @app.context_processor
 def utilidades():
