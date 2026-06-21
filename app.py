@@ -964,6 +964,7 @@ def mi_semana(trabajador_id):
     dias        = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']
     asistencias = {a.dia: a for a in semana.asistencias}
 
+        sabado = lunes + timedelta(days=5)
     return render_template('semana.html',
         trabajador=trabajador,
         semana=semana,
@@ -971,7 +972,12 @@ def mi_semana(trabajador_id):
         asistencias=asistencias,
         saldo_semana=calcular_saldo(semana),
         lunes=lunes,
-        obra_id=obra_id
+        sabado=sabado,
+        obra_id=obra_id,
+        semana_offset=0,
+        es_semana_actual=True,
+        puede_retroceder=False,
+        puede_avanzar=False
     )
 
 @app.route('/semana/<int:semana_id>/pago', methods=['POST'])
