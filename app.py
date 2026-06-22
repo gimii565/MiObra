@@ -385,7 +385,7 @@ def trabajador_inicio():
         semanas_obra = Semana.query.filter_by(
             trabajador_id=t.id, obra_id=to.obra_id
         ).all()
-        deuda = sum(calcular_saldo(s) for s in semanas_obra)
+        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
         obras_archivadas.append({'to': to, 'deuda': round(deuda, 2)})
 
     solicitudes = Solicitud.query.filter_by(trabajador_id=t.id, estado='pendiente').all()
@@ -408,7 +408,7 @@ def revisar_solicitud(solicitud_id):
         semanas_obra = Semana.query.filter_by(
             trabajador_id=trab_id, obra_id=obra_activa.obra_id
         ).all()
-        deuda = sum(calcular_saldo(s) for s in semanas_obra)
+        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
     return render_template('revisar_solicitud.html',
         solicitud=solicitud,
         obra_activa=obra_activa,
@@ -437,7 +437,7 @@ def responder_solicitud(solicitud_id):
         semanas_obra = Semana.query.filter_by(
             trabajador_id=trab_id, obra_id=obra_activa.obra_id
         ).all()
-        deuda = sum(calcular_saldo(s) for s in semanas_obra)
+        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
 
         if accion_obra == 'salir' and deuda == 0:
             obra_activa.estado = 'salida'
@@ -511,7 +511,7 @@ def trabajador_mis_archivadas():
         semanas_obra = Semana.query.filter_by(
             trabajador_id=t.id, obra_id=to.obra_id
         ).all()
-        deuda = sum(calcular_saldo(s) for s in semanas_obra)
+        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
         obras_archivadas.append({'to': to, 'deuda': round(deuda, 2)})
     return render_template('trabajador_archivadas.html', t=t, obras_archivadas=obras_archivadas)
 
@@ -527,7 +527,7 @@ def salir_obra(obra_id):
         semanas_obra = Semana.query.filter_by(
             trabajador_id=trab_id, obra_id=obra_id
         ).all()
-        deuda = sum(calcular_saldo(s) for s in semanas_obra)
+        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
         if deuda > 0:
             to.estado = 'archivada'
         else:
@@ -633,6 +633,7 @@ def ver_obra(obra_id):
         total_semana_actual += saldo_semana
         semanas_obra = Semana.query.filter_by(trabajador_id=t.id, obra_id=obra_id).all()
         deuda_total = sum(calcular_saldo(s) for s in semanas_obra)
+        deuda_total = max(0, deuda_total)
         total_deuda_general += deuda_total
         resumen_trabajadores.append({
             'trabajador':   t,
@@ -1136,7 +1137,7 @@ def ver_archivados(obra_id):
     for to in to_archivados:
         t = to.trabajador
         semanas_obra = Semana.query.filter_by(trabajador_id=t.id, obra_id=obra_id).all()
-        deuda = sum(calcular_saldo(s) for s in semanas_obra)
+        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
         resumen.append({'trabajador': t, 'deuda_total': round(deuda, 2)})
 
     return render_template('archivados.html', obra=obra, resumen=resumen)
