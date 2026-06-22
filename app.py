@@ -975,7 +975,7 @@ def mi_semana(trabajador_id):
         sabado=sabado,
         obra_id=obra_id,
         semana_offset=0,
-        es_semana_actual=True,
+        es_semana_actual=False,
         puede_retroceder=False,
         puede_avanzar=False
     )
