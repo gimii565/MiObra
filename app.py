@@ -7,10 +7,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
 from datetime import date, timedelta, datetime
 from weasyprint import HTML as WPHTML
-from supabase import create_client
-SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_KEY = os.getenv('SUPABASE_SECRET_KEY')
-supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
+import cloudinary
+import cloudinary.uploader
+
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET')
+)
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -191,16 +195,13 @@ def get_usuario_actual():
 # ─────────────────────────────────────────
 # CONTEXT PROCESSOR
 # ─────────────────────────────────────────
-SUPABASE_STORAGE_URL = f"https://nstciddinmrdigagjbxy.supabase.co/storage/v1/object/public/Fotos"
-
 @app.context_processor
 def utilidades():
     return dict(
         timedelta=timedelta,
         calcular_saldo=calcular_saldo,
         session=session,
-        today=date.today,
-        supabase_url=SUPABASE_STORAGE_URL
+        today=date.today
     )
 
 # ─────────────────────────────────────────
@@ -257,14 +258,13 @@ def registro():
             if 'foto' in request.files:
                 file = request.files['foto']
                 if file and file.filename and allowed_file(file.filename):
-                    filename = secure_filename(f"perfil_{u.id}_{file.filename}")
-                    file_bytes = file.read()
-                    supabase_client.storage.from_('Fotos').upload(
-                        filename,
-                        file_bytes,
-                        {'content-type': file.content_type}
+                    public_id = secure_filename(f"perfil_{u.id}_{file.filename}").rsplit('.', 1)[0]
+                    resultado = cloudinary.uploader.upload(
+                        file,
+                        folder="planilla_obras",
+                        public_id=public_id
                     )
-                    u.foto_perfil = filename
+                    u.foto_perfil = resultado['secure_url']
 
             db.session.commit()
             session['usuario_id']     = u.id
@@ -331,14 +331,13 @@ def trabajador_registro():
             if 'foto' in request.files:
                 file = request.files['foto']
                 if file and file.filename and allowed_file(file.filename):
-                    filename = secure_filename(f"trab_{t.id}_{file.filename}")
-                    file_bytes = file.read()
-                    supabase_client.storage.from_('Fotos').upload(
-                        filename,
-                        file_bytes,
-                        {'content-type': file.content_type}
+                    public_id = secure_filename(f"trab_{t.id}_{file.filename}").rsplit('.', 1)[0]
+                    resultado = cloudinary.uploader.upload(
+                        file,
+                        folder="planilla_obras",
+                        public_id=public_id
                     )
-                    t.foto_perfil = filename
+                    t.foto_perfil = resultado['secure_url']
 
             db.session.commit()
             session['trabajador_id']     = t.id
@@ -385,7 +384,7 @@ def trabajador_inicio():
         semanas_obra = Semana.query.filter_by(
             trabajador_id=t.id, obra_id=to.obra_id
         ).all()
-        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
+        deuda = sum(calcular_saldo(s) for s in semanas_obra)
         obras_archivadas.append({'to': to, 'deuda': round(deuda, 2)})
 
     solicitudes = Solicitud.query.filter_by(trabajador_id=t.id, estado='pendiente').all()
@@ -408,7 +407,7 @@ def revisar_solicitud(solicitud_id):
         semanas_obra = Semana.query.filter_by(
             trabajador_id=trab_id, obra_id=obra_activa.obra_id
         ).all()
-        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
+        deuda = sum(calcular_saldo(s) for s in semanas_obra)
     return render_template('revisar_solicitud.html',
         solicitud=solicitud,
         obra_activa=obra_activa,
@@ -437,7 +436,7 @@ def responder_solicitud(solicitud_id):
         semanas_obra = Semana.query.filter_by(
             trabajador_id=trab_id, obra_id=obra_activa.obra_id
         ).all()
-        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
+        deuda = sum(calcular_saldo(s) for s in semanas_obra)
 
         if accion_obra == 'salir' and deuda == 0:
             obra_activa.estado = 'salida'
@@ -511,7 +510,7 @@ def trabajador_mis_archivadas():
         semanas_obra = Semana.query.filter_by(
             trabajador_id=t.id, obra_id=to.obra_id
         ).all()
-        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
+        deuda = sum(calcular_saldo(s) for s in semanas_obra)
         obras_archivadas.append({'to': to, 'deuda': round(deuda, 2)})
     return render_template('trabajador_archivadas.html', t=t, obras_archivadas=obras_archivadas)
 
@@ -527,7 +526,7 @@ def salir_obra(obra_id):
         semanas_obra = Semana.query.filter_by(
             trabajador_id=trab_id, obra_id=obra_id
         ).all()
-        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
+        deuda = sum(calcular_saldo(s) for s in semanas_obra)
         if deuda > 0:
             to.estado = 'archivada'
         else:
@@ -633,7 +632,6 @@ def ver_obra(obra_id):
         total_semana_actual += saldo_semana
         semanas_obra = Semana.query.filter_by(trabajador_id=t.id, obra_id=obra_id).all()
         deuda_total = sum(calcular_saldo(s) for s in semanas_obra)
-        deuda_total = max(0, deuda_total)
         total_deuda_general += deuda_total
         resumen_trabajadores.append({
             'trabajador':   t,
@@ -1033,17 +1031,19 @@ def subir_foto(obra_id):
     file = request.files['foto']
     if file and allowed_file(file.filename):
         filename = secure_filename(f"{obra_id}_{date.today()}_{file.filename}")
-        file_bytes = file.read()
+        public_id = filename.rsplit('.', 1)[0]
         try:
-            supabase_client.storage.from_('Fotos').upload(
-                filename,
-                file_bytes,
-                {'content-type': file.content_type}
+            resultado = cloudinary.uploader.upload(
+                file,
+                folder="planilla_obras",
+                public_id=public_id
             )
-            print(f"Foto subida a Supabase: {filename}")
+            url_foto = resultado['secure_url']
+            print(f"Foto subida a Cloudinary: {url_foto}")
         except Exception as e:
-            print(f"ERROR Supabase upload: {e}")
-        foto = Foto(obra_id=obra_id, filename=filename,
+            print(f"ERROR Cloudinary upload: {e}")
+            url_foto = filename
+        foto = Foto(obra_id=obra_id, filename=url_foto,
                     nota=request.form.get('nota', ''), fecha=date.today())
         db.session.add(foto)
         db.session.commit()
@@ -1055,9 +1055,12 @@ def eliminar_foto(foto_id, obra_id):
     if redir: return redir
     foto = Foto.query.get_or_404(foto_id)
     try:
-        supabase_client.storage.from_('Fotos').remove([foto.filename])
-    except:
-        pass
+        # Extraer public_id de la URL de Cloudinary
+        if 'cloudinary.com' in foto.filename:
+            public_id = '/'.join(foto.filename.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
+            cloudinary.uploader.destroy(public_id)
+    except Exception as e:
+        print(f"ERROR Cloudinary delete: {e}")
     db.session.delete(foto)
     db.session.commit()
     return redirect(url_for('ver_fotos', obra_id=obra_id))
@@ -1137,7 +1140,7 @@ def ver_archivados(obra_id):
     for to in to_archivados:
         t = to.trabajador
         semanas_obra = Semana.query.filter_by(trabajador_id=t.id, obra_id=obra_id).all()
-        deuda = max(0, sum(calcular_saldo(s) for s in semanas_obra))
+        deuda = sum(calcular_saldo(s) for s in semanas_obra)
         resumen.append({'trabajador': t, 'deuda_total': round(deuda, 2)})
 
     return render_template('archivados.html', obra=obra, resumen=resumen)
@@ -1336,18 +1339,20 @@ def perfil():
             if 'foto' in request.files:
                 file = request.files['foto']
                 if file and file.filename and allowed_file(file.filename):
-                    filename = secure_filename(f"perfil_{u.id}_{file.filename}")
-                    file_bytes = file.read()
+                    public_id = secure_filename(f"perfil_{u.id}_{file.filename}").rsplit('.', 1)[0]
                     try:
-                        supabase_client.storage.from_('Fotos').remove([filename])
+                        # Borrar foto anterior si existe en Cloudinary
+                        if u.foto_perfil and 'cloudinary.com' in u.foto_perfil:
+                            old_id = '/'.join(u.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
+                            cloudinary.uploader.destroy(old_id)
                     except:
                         pass
-                    supabase_client.storage.from_('Fotos').upload(
-                        filename,
-                        file_bytes,
-                        {'content-type': file.content_type}
-                )
-                u.foto_perfil = filename
+                    resultado = cloudinary.uploader.upload(
+                        file,
+                        folder="planilla_obras",
+                        public_id=public_id
+                    )
+                    u.foto_perfil = resultado['secure_url']
         if not error:
             db.session.commit()
             session['usuario_nombre'] = u.usuario
@@ -1385,23 +1390,24 @@ def trabajador_perfil():
         if 'foto' in request.files:
             file = request.files['foto']
             if file and file.filename and allowed_file(file.filename):
-                filename = secure_filename(f"trab_{t.id}_{file.filename}")
-                file_bytes = file.read()
+                public_id = secure_filename(f"trab_{t.id}_{file.filename}").rsplit('.', 1)[0]
                 try:
-                    supabase_client.storage.from_('Fotos').remove([filename])
+                    if t.foto_perfil and 'cloudinary.com' in t.foto_perfil:
+                        old_id = '/'.join(t.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
+                        cloudinary.uploader.destroy(old_id)
                 except:
                     pass
                 try:
-                    supabase_client.storage.from_('Fotos').upload(
-                        filename,
-                        file_bytes,
-                        {'content-type': file.content_type}
+                    resultado = cloudinary.uploader.upload(
+                        file,
+                        folder="planilla_obras",
+                        public_id=public_id
                     )
-                    print(f"Foto perfil subida: {filename}")
+                    t.foto_perfil = resultado['secure_url']
+                    session['trabajador_foto'] = resultado['secure_url']
+                    print(f"Foto perfil subida: {resultado['secure_url']}")
                 except Exception as e:
                     print(f"ERROR perfil upload: {e}")
-                u.foto_perfil = filename
-                session['trabajador_foto'] = filename
         if not error:
             db.session.commit()
             session['trabajador_nombre'] = f"{t.nombre} {t.apellido or ''}".strip()
