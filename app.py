@@ -23,7 +23,7 @@ app.config.from_object(Config)
 app.secret_key = 'planilla_obras_2025'
 
 db = SQLAlchemy(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 UPLOAD_FOLDER = os.path.join('static', 'fotos')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
@@ -1415,6 +1415,102 @@ def trabajador_perfil():
             session['trabajador_nombre'] = f"{t.nombre} {t.apellido or ''}".strip()
             exito = 'Perfil actualizado correctamente'
     return render_template('trabajador_perfil.html', t=t, error=error, exito=exito)
+
+@app.route('/perfil/eliminar-foto', methods=['POST'])
+def eliminar_foto_perfil():
+    redir = login_requerido()
+    if redir: return redir
+    u = get_usuario_actual()
+    try:
+        if u.foto_perfil and 'cloudinary.com' in u.foto_perfil:
+            public_id = '/'.join(u.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
+            cloudinary.uploader.destroy(public_id)
+    except:
+        pass
+    u.foto_perfil = None
+    session['foto_perfil'] = ''
+    db.session.commit()
+    return redirect(url_for('perfil'))
+
+@app.route('/perfil/eliminar-foto', methods=['POST'])
+def eliminar_foto_perfil():
+    redir = login_requerido()
+    if redir: return redir
+    u = get_usuario_actual()
+    try:
+        if u.foto_perfil and 'cloudinary.com' in u.foto_perfil:
+            public_id = '/'.join(u.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
+            cloudinary.uploader.destroy(public_id)
+    except:
+        pass
+    u.foto_perfil = None
+    session['foto_perfil'] = ''
+    db.session.commit()
+    return redirect(url_for('perfil'))
+
+@app.route('/perfil/eliminar-foto', methods=['POST'])
+def eliminar_foto_perfil():
+    redir = login_requerido()
+    if redir: return redir
+    u = get_usuario_actual()
+    try:
+        if u.foto_perfil and 'cloudinary.com' in u.foto_perfil:
+            public_id = '/'.join(u.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
+            cloudinary.uploader.destroy(public_id)
+    except:
+        pass
+    u.foto_perfil = None
+    session['foto_perfil'] = ''
+    db.session.commit()
+    return redirect(url_for('perfil'))
+
+@app.route('/perfil/eliminar-foto', methods=['POST'])
+def eliminar_foto_perfil():
+    redir = login_requerido()
+    if redir: return redir
+    u = get_usuario_actual()
+    try:
+        if u.foto_perfil and 'cloudinary.com' in u.foto_perfil:
+            public_id = '/'.join(u.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
+            cloudinary.uploader.destroy(public_id)
+    except:
+        pass
+    u.foto_perfil = None
+    session['foto_perfil'] = ''
+    db.session.commit()
+    return redirect(url_for('perfil'))
+
+@app.route('/perfil/eliminar-foto', methods=['POST'])
+def eliminar_foto_perfil():
+    redir = login_requerido()
+    if redir: return redir
+    u = get_usuario_actual()
+    try:
+        if u.foto_perfil and 'cloudinary.com' in u.foto_perfil:
+            public_id = '/'.join(u.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
+            cloudinary.uploader.destroy(public_id)
+    except:
+        pass
+    u.foto_perfil = None
+    session['foto_perfil'] = ''
+    db.session.commit()
+    return redirect(url_for('perfil'))
+
+@app.route('/trabajador/perfil/eliminar-foto', methods=['POST'])
+def eliminar_foto_trabajador():
+    if not session.get('trabajador_id'):
+        return redirect(url_for('trabajador_login'))
+    t = Trabajador.query.get_or_404(session['trabajador_id'])
+    try:
+        if t.foto_perfil and 'cloudinary.com' in t.foto_perfil:
+            public_id = '/'.join(t.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
+            cloudinary.uploader.destroy(public_id)
+    except:
+        pass
+    t.foto_perfil = None
+    session['trabajador_foto'] = ''
+    db.session.commit()
+    return redirect(url_for('trabajador_perfil'))
 
 @app.route('/trabajador/elegir', methods=['GET', 'POST'])
 def elegir_trabajador():

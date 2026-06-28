@@ -25,34 +25,67 @@
 
     <div class="card">
 
-        <!-- Foto de perfil -->
+        <!-- Foto de perfil con botón Editar -->
         <div style="text-align:center;margin-bottom:24px;">
-            {% if t.foto_perfil %}
-                <img src="{{ t.foto_perfil }}"
-                     style="width:100px;height:100px;border-radius:50%;object-fit:cover;
-                            border:3px solid var(--primary);">
-            {% else %}
-                <div style="width:100px;height:100px;border-radius:50%;background:var(--primary);
-                            display:flex;align-items:center;justify-content:center;
-                            font-size:40px;margin:0 auto;">
-                    <i class="bi bi-bricks"></i>
+            <div style="position:relative;display:inline-block;">
+                {% if t.foto_perfil %}
+                    <img src="{{ t.foto_perfil }}" id="preview-foto"
+                         style="width:100px;height:100px;border-radius:50%;object-fit:cover;
+                                border:3px solid var(--primary);">
+                {% else %}
+                    <div id="avatar-placeholder"
+                         style="width:100px;height:100px;border-radius:50%;background:var(--primary);
+                                display:flex;align-items:center;justify-content:center;
+                                font-size:40px;margin:0 auto;border:3px solid var(--primary);">
+                        <i class="bi bi-bricks" style="color:#fff;"></i>
+                    </div>
+                    <img src="" id="preview-foto"
+                         style="width:100px;height:100px;border-radius:50%;object-fit:cover;
+                                border:3px solid var(--primary);display:none;">
+                {% endif %}
+
+                <div onclick="document.getElementById('input-foto').click()"
+                     style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+                            background:var(--surface);border:1px solid var(--border);
+                            border-radius:20px;padding:5px 12px;cursor:pointer;
+                            display:flex;align-items:center;gap:6px;
+                            font-size:13px;font-weight:600;color:#28a745;
+                            box-shadow:0 2px 8px rgba(0,0,0,0.2);white-space:nowrap;">
+                    <i class="bi bi-camera-fill"></i> Editar
                 </div>
-            {% endif %}
-            <p style="margin-top:8px;font-weight:bold;color:var(--text);">
+            </div>
+
+            <input type="file" id="input-foto" name="foto" accept="image/*"
+                   style="display:none;" onchange="previsualizarFoto(this)">
+
+            <p style="margin-top:24px;font-weight:bold;color:var(--text);">
                 {{ t.nombre }} {{ t.apellido or '' }}
             </p>
             <p style="font-size:13px;color:var(--text-muted);">{{ t.rol }}</p>
             <p style="font-size:13px;color:var(--text-muted);">{{ t.obra.nombre }}</p>
+
+            {% if t.foto_perfil %}
+            <form method="POST" action="/trabajador/perfil/eliminar-foto"
+                  onsubmit="return confirm('¿Eliminar foto de perfil?')"
+                  style="margin-top:6px;">
+                <button type="submit"
+                        style="background:none;border:none;color:#dc3545;
+                               font-size:13px;cursor:pointer;">
+                    <i class="bi bi-trash-fill"></i> Eliminar foto de perfil
+                </button>
+            </form>
+            {% endif %}
         </div>
 
-        <form method="POST" action="/trabajador/perfil" enctype="multipart/form-data">
+        <form method="POST" action="/trabajador/perfil" enctype="multipart/form-data" id="form-perfil">
 
-            <div class="campo">
-                <label>Foto de perfil</label>
-                <input type="file" name="foto" accept="image/*"
-                    style="width:100%;padding:10px;border:2px dashed var(--primary);
-                           border-radius:8px;background:var(--bg);cursor:pointer;">
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var input = document.getElementById('input-foto');
+                    var form  = document.getElementById('form-perfil');
+                    form.appendChild(input);
+                });
+            </script>
 
             <div class="campo">
                 <label>Nombre</label>
@@ -99,5 +132,23 @@
         </form>
     </div>
 </div>
+
+<script>
+function previsualizarFoto(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var preview = document.getElementById('preview-foto');
+            var placeholder = document.getElementById('avatar-placeholder');
+            if (preview) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            if (placeholder) placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 
 {% endblock %}
