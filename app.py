@@ -1338,7 +1338,7 @@ def perfil():
                 error = 'La contraseña debe tener al menos 4 caracteres'
             else:
                 u.password = generate_password_hash(nueva_pass)
-            if 'foto' in request.files:
+        if 'foto' in request.files:
                 file = request.files['foto']
                 if file and file.filename and allowed_file(file.filename):
                     public_id = secure_filename(f"perfil_{u.id}_{file.filename}").rsplit('.', 1)[0]
