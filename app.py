@@ -1416,69 +1416,6 @@ def trabajador_perfil():
             exito = 'Perfil actualizado correctamente'
     return render_template('trabajador_perfil.html', t=t, error=error, exito=exito)
 
-@app.route('/perfil/eliminar-foto', methods=['POST'])
-def eliminar_foto_perfil():
-    redir = login_requerido()
-    if redir: return redir
-    u = get_usuario_actual()
-    try:
-        if u.foto_perfil and 'cloudinary.com' in u.foto_perfil:
-            public_id = '/'.join(u.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
-            cloudinary.uploader.destroy(public_id)
-    except:
-        pass
-    u.foto_perfil = None
-    session['foto_perfil'] = ''
-    db.session.commit()
-    return redirect(url_for('perfil'))
-
-@app.route('/perfil/eliminar-foto', methods=['POST'])
-def eliminar_foto_perfil():
-    redir = login_requerido()
-    if redir: return redir
-    u = get_usuario_actual()
-    try:
-        if u.foto_perfil and 'cloudinary.com' in u.foto_perfil:
-            public_id = '/'.join(u.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
-            cloudinary.uploader.destroy(public_id)
-    except:
-        pass
-    u.foto_perfil = None
-    session['foto_perfil'] = ''
-    db.session.commit()
-    return redirect(url_for('perfil'))
-
-@app.route('/perfil/eliminar-foto', methods=['POST'])
-def eliminar_foto_perfil():
-    redir = login_requerido()
-    if redir: return redir
-    u = get_usuario_actual()
-    try:
-        if u.foto_perfil and 'cloudinary.com' in u.foto_perfil:
-            public_id = '/'.join(u.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
-            cloudinary.uploader.destroy(public_id)
-    except:
-        pass
-    u.foto_perfil = None
-    session['foto_perfil'] = ''
-    db.session.commit()
-    return redirect(url_for('perfil'))
-
-@app.route('/perfil/eliminar-foto', methods=['POST'])
-def eliminar_foto_perfil():
-    redir = login_requerido()
-    if redir: return redir
-    u = get_usuario_actual()
-    try:
-        if u.foto_perfil and 'cloudinary.com' in u.foto_perfil:
-            public_id = '/'.join(u.foto_perfil.split('/upload/')[1].split('/')[1:]).rsplit('.', 1)[0]
-            cloudinary.uploader.destroy(public_id)
-    except:
-        pass
-    u.foto_perfil = None
-    session['foto_perfil'] = ''
-    db.session.commit()
-    return redirect(url_for('perfil'))
 
 @app.route('/perfil/eliminar-foto', methods=['POST'])
 def eliminar_foto_perfil():
