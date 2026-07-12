@@ -1251,7 +1251,23 @@ def chats():
             key=lambda x: x['ultimo_mensaje'].fecha if x['ultimo_mensaje'] else datetime.min,
             reverse=True
         )
-        return render_template('chats.html', contactos=contactos_info, tipo='contratista')
+        for c in contactos_info:
+            no_leidos = Mensaje.query.filter_by(
+            destinatario_tipo='contratista',
+            destinatario_id=usuario_id,
+            remitente_tipo='trabajador',
+            remitente_id=c['otro'].id,
+            leido=False
+            ).count()
+            c['no_leidos'] = no_leidos
+
+        total_no_leidos = sum(c['no_leidos'] for c in contactos_info)
+
+        return render_template('chats.html',
+        contactos=contactos_info,
+        tipo='contratista',
+        total_no_leidos=total_no_leidos
+    )
 
     elif session.get('trabajador_id'):
         t = Trabajador.query.get_or_404(session['trabajador_id'])
