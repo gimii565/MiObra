@@ -1251,16 +1251,6 @@ def chats():
             key=lambda x: x['ultimo_mensaje'].fecha if x['ultimo_mensaje'] else datetime.min,
             reverse=True
         )
-        for c in contactos_info:
-            no_leidos = Mensaje.query.filter_by(
-            destinatario_tipo='contratista',
-            destinatario_id=usuario_id,
-            remitente_tipo='trabajador',
-            remitente_id=c['otro'].id,
-            leido=False
-            ).count()
-            c['no_leidos'] = no_leidos
-
         total_no_leidos = sum(c['no_leidos'] for c in contactos_info)
 
         return render_template('chats.html',
