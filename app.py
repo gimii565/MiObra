@@ -1504,6 +1504,52 @@ def on_mensaje(data):
         'fecha': msg.fecha.strftime('%H:%M')
     }, room=data['room'])
 
+@app.route('/api/mensajes/<rem_tipo>/<int:rem_id>/<dest_tipo>/<int:dest_id>')
+def api_mensajes(rem_tipo, rem_id, dest_tipo, dest_id):
+    desde_id = request.args.get('desde_id', 0, type=int)
+    msgs = Mensaje.query.filter(
+        Mensaje.id > desde_id
+    ).filter(
+        db.or_(
+            db.and_(Mensaje.remitente_tipo == rem_tipo, Mensaje.remitente_id == rem_id,
+                    Mensaje.destinatario_tipo == dest_tipo, Mensaje.destinatario_id == dest_id),
+            db.and_(Mensaje.remitente_tipo == dest_tipo, Mensaje.remitente_id == dest_id,
+                    Mensaje.destinatario_tipo == rem_tipo, Mensaje.destinatario_id == rem_id)
+        )
+    ).order_by(Mensaje.id.asc()).all()
+    return jsonify([{
+        'id': m.id,
+        'contenido': m.contenido,
+        'remitente_tipo': m.remitente_tipo,
+        'remitente_id': m.remitente_id,
+        'fecha': m.fecha.strftime('%H:%M')
+    } for m in msgs])
+
+@app.route('/api/enviar_mensaje', methods=['POST'])
+def api_enviar_mensaje():
+    data = request.get_json()
+    contenido = data.get('contenido', '').strip()
+    if not contenido:
+        return jsonify({'ok': False})
+    msg = Mensaje(
+        remitente_tipo=data['remitente_tipo'],
+        remitente_id=int(data['remitente_id']),
+        destinatario_tipo=data['destinatario_tipo'],
+        destinatario_id=int(data['destinatario_id']),
+        contenido=contenido,
+        fecha=datetime.now()
+    )
+    db.session.add(msg)
+    db.session.commit()
+    return jsonify({
+        'ok': True,
+        'id': msg.id,
+        'contenido': contenido,
+        'remitente_tipo': data['remitente_tipo'],
+        'remitente_id': int(data['remitente_id']),
+        'fecha': msg.fecha.strftime('%H:%M')
+    })
+
 @app.route('/trabajador/<int:trab_id>/desarchivar', methods=['POST'])
 def desarchivar_trabajador(trab_id):
     redir = login_requerido()
